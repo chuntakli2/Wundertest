@@ -1,0 +1,23 @@
+PODS:
+  - AsyncSwift (2.0.0)
+  - PullToRefresher (2.0.1)
+  - Realm (2.0.2):
+    - Realm/Headers (= 2.0.2)
+  - Realm/Headers (2.0.2)
+  - RealmSwift (2.0.2):
+    - Realm (= 2.0.2)
+
+DEPENDENCIES:
+  - AsyncSwift
+  - PullToRefresher
+  - RealmSwift
+
+SPEC CHECKSUMS:
+  AsyncSwift: 6ba6ed9ecb51344458063f7c86fe447ab824e313
+  PullToRefresher: 9a529c2506b91f299805e5a5a0c3ef0b44e8ba63
+  Realm: 0f5a194af0b7e6158b83db41b4ee1a00be7ddf1a
+  RealmSwift: 0eb5070d851cba7c66e841ca756d83609dc78bc8
+
+PODFILE CHECKSUM: 708eddf93a429079cd61e7222f3e6e13979132ee
+
+COCOAPODS: 1.1.1

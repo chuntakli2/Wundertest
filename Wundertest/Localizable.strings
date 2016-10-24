@@ -1,0 +1,14 @@
+/* 
+  Localizable.strings
+  Wundertest
+
+  Created by Chun Tak Li on 24/10/2016.
+  Copyright © 2016 Chun Tak Li. All rights reserved.
+*/
+
+"cancel.title" = "Cancel";
+"ok.title" = "OK";
+"retry.title" = "Retry";
+"save.title" = "Save";
+"delete.title" = "Delete";
+"edit.title" = "Edit";

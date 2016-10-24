@@ -1,0 +1,6 @@
+framework module Pods_Wundertest {
+  umbrella header "Pods-Wundertest-umbrella.h"
+
+  export *
+  module * { export * }
+}
