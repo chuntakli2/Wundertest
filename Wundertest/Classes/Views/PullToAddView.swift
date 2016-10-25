@@ -55,7 +55,7 @@ class PullToAddView: UIView {
     
     private func setupAddView() {
         self.addView = UIImageView(image: UIImage(named: "add_white"))
-        self.addView?.tintColor = .white
+        self.addView?.tintColor = .black
     }
     
     private func setupSubviews() {

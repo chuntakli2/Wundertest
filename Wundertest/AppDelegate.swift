@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let taskNavigationController = BaseNavigationController(rootViewController: taskViewController)
         
         self.window = UIWindow(frame: UIScreen.main.bounds)
-        self.window?.backgroundColor = BACKGROUND_COLOUR
+        self.window?.backgroundColor = APP_GRAY_COLOUR
         self.window?.tintColor = TINT_COLOUR
         self.window?.rootViewController = taskNavigationController
         self.window?.makeKeyAndVisible()

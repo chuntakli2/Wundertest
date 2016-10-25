@@ -10,7 +10,7 @@ import Async
 import PullToRefresh
 import RealmSwift
 
-class TaskViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, TaskSectionHeaderViewDelegate {
+class TaskViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, TaskSectionHeaderViewDelegate, TaskCellDelegate, ComposeTaskViewControllerDelegate {
 
     private var noTaskLabel: UILabel?
     private var tableView: UITableView?
@@ -69,15 +69,20 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "TaskSectionHeaderView") as! TaskSectionHeaderView
         header.delegate = self
         header.isUserInteractionEnabled = (section != 0)
-        let headerTitle = ((section == 0) ? "In progress" : ((self.isExpanded) ? "Hide Completed" : "Show Completed"))
+        let headerTitle = ((section == 0) ? NSLocalizedString("inProgress.title", comment: "") : ((self.isExpanded) ? NSLocalizedString("hideCompleted.title", comment: "") : NSLocalizedString("showCompleted", comment: "")))
         header.titleLabel?.attributedText = NSAttributedString(string: headerTitle, attributes: FONT_ATTR_MEDIUM_BLACK)
         return header
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! TaskCell
+        cell.delegate = self
+        cell.indexPath = indexPath
         cell.showsReorderControl = true
-        cell.titleLabel?.attributedText = NSAttributedString(string: "Setting", attributes: FONT_ATTR_LARGE_WHITE)
+        let tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.displayedTasks)
+        let task = tasks[indexPath.row]
+        let fontAttribute = ((task.isCompleted) ? FONT_ATTR_LARGE_WHITE : FONT_ATTR_LARGE_BLACK)
+        cell.titleLabel?.attributedText = NSAttributedString(string: task.title, attributes: fontAttribute)
         return cell
     }
     
@@ -142,25 +147,40 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     
     // MARK: - Implementation of TaskCellDelegate Protocols
     
+    func completed(indexPath: IndexPath) {
+        let tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.displayedTasks)
+        let task = tasks[indexPath.row]
+        let realm = RealmManager.sharedInstance.realm
+        try! realm.write {
+            task.isCompleted = !task.isCompleted
+        }
+        self.separateTasks()
+        
+//        self.tableView?.beginUpdates()
+        self.tableView?.reloadData()
+//        self.tableView?.endUpdates()
+    }
+    
     // MARK: - Implementation of ComposeTaskViewDelegate Protocols
     
-    func composed(task: Task) {
-        let task = Task()
-        task.title = "Testing Task"
+    func compose(task: Task) {
         let realm = RealmManager.sharedInstance.realm
         realm.beginWrite()
         realm.add(task)
         try! realm.commitWrite()
         self.separateTasks()
+        self.tableView?.reloadData()
+    }
+    
+    func cancel() {
         
-        self.tableView?.endRefreshing(at: .top)
     }
     
     // MARK: - Events
     
-    func editBarButtonAction() {
+    func rightBarButtonAction() {
         self.tableView?.setEditing(!(self.tableView!.isEditing), animated: true)
-        let rightBarButtonItem = ((self.tableView!.isEditing) ? UIBarButtonItem(barButtonSystemItem: .done, target: self, action: .editBarButtonAction) : UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: .editBarButtonAction))
+        let rightBarButtonItem = ((self.tableView!.isEditing) ? UIBarButtonItem(barButtonSystemItem: .done, target: self, action: .rightBarButtonAction) : UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: .rightBarButtonAction))
         rightBarButtonItem.tintColor = .white
         self.navigationItem.setRightBarButton(rightBarButtonItem, animated: true)
     }
@@ -191,11 +211,17 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
                 self.incompletedTasks.append(task)
             }
         }
-        self.tableView?.reloadData()
     }
     
     private func composeTask() {
-        
+        let composeTaskViewController = ComposeTaskViewController()
+        composeTaskViewController.delegate = self
+        self.addChildViewController(composeTaskViewController)
+        composeTaskViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(composeTaskViewController.view)
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[compose]|", options: .directionMask, metrics: nil, views: ["compose": composeTaskViewController.view!]))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[compose]|", options: .directionMask, metrics: nil, views: ["compose": composeTaskViewController.view!]))
+        self.tableView?.endRefreshing(at: .top)
     }
     
     // MARK: - Subviews
@@ -227,7 +253,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.noTaskLabel = UILabel()
         self.noTaskLabel?.numberOfLines = 1
         self.noTaskLabel?.textAlignment = .center
-        self.noTaskLabel?.attributedText = NSAttributedString(string: "Pull to add new task", attributes: FONT_ATTR_LARGE_BLACK)
+        self.noTaskLabel?.attributedText = NSAttributedString(string: NSLocalizedString("pullToAdd.message", comment: ""), attributes: FONT_ATTR_LARGE_BLACK)
         self.noTaskLabel?.isUserInteractionEnabled = false
     }
     
@@ -250,7 +276,6 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
             
             let metrics = ["WIDTH": GENERAL_ITEM_WIDTH,
                            "HEIGHT": GENERAL_ITEM_HEIGHT,
-                           "STATUS_BAR_HEIGHT": STATUS_BAR_HEIGHT,
                            "SMALL_SPACING": SMALL_SPACING]
 
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[table]|", options: .directionMask, metrics: nil, views: views))
@@ -270,6 +295,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         super.viewDidLayoutSubviews()
         
         self.noTaskLabel?.isHidden = !self.isEmptyTask
+        self.pullToAddView?.layoutSubviews()
     }
     
     // MARK: - View lifecycle
@@ -283,7 +309,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let editBarButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: .editBarButtonAction)
+        let editBarButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: .rightBarButtonAction)
         editBarButton.tintColor = .white
         self.navigationItem.rightBarButtonItem = editBarButton
         
@@ -291,6 +317,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.tableView?.register(TaskCell.self, forCellReuseIdentifier: "TaskCell")
         
         self.separateTasks()
+        self.tableView?.reloadData()
         Async.background({ [unowned self] in
             self.getTasks()
         })
@@ -298,5 +325,5 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
 }
 
 private extension Selector {
-    static let editBarButtonAction = #selector(TaskViewController.editBarButtonAction)
+    static let rightBarButtonAction = #selector(TaskViewController.rightBarButtonAction)
 }

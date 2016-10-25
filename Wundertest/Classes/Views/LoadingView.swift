@@ -113,19 +113,19 @@ class LoadingView: UIView {
     
     private func setupDotOne() {
         self.dotOne = UIImageView()
-        self.dotOne?.backgroundColor = APP_COLOUR
+        self.dotOne?.backgroundColor = TINT_COLOUR
         self.dotOne?.layer.cornerRadius = LOADING_RADIUS
     }
     
     private func setupDotTwo() {
         self.dotTwo = UIImageView()
-        self.dotTwo?.backgroundColor = APP_COLOUR
+        self.dotTwo?.backgroundColor = TINT_COLOUR
         self.dotTwo?.layer.cornerRadius = LOADING_RADIUS
     }
     
     private func setupDotThree() {
         self.dotThree = UIImageView()
-        self.dotThree?.backgroundColor = APP_COLOUR
+        self.dotThree?.backgroundColor = TINT_COLOUR
         self.dotThree?.layer.cornerRadius = LOADING_RADIUS
     }
     

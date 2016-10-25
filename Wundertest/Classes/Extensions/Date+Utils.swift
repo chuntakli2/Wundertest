@@ -12,7 +12,7 @@ extension Date {
     
     // MARK: - Public Methods
     
-    public static func getCurrentTimestampInMilliseconds() -> Int64 {
-        return Int64(Date().timeIntervalSince1970 * 1000)
+    public static func getCurrentTimestampInMilliseconds() -> Int {
+        return Int(Date().timeIntervalSince1970 * 1000)
     }
 }

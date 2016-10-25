@@ -12,3 +12,10 @@
 "save.title" = "Save";
 "delete.title" = "Delete";
 "edit.title" = "Edit";
+"newTask.title" = "New Task";
+"inProgress.title" = "In Progress";
+"hideCompleted.title" = "Hide Completed";
+"showCompleted.title" = "Show Completed";
+"pullToAdd.message" = "Pull to add new task";
+"date.title" = "Date";
+"time.title" = "Time";

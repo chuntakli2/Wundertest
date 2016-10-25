@@ -9,6 +9,7 @@
 import UIKit
 
 class BaseNavigationController: UINavigationController {
+    
     var statusBarStyle: UIStatusBarStyle = .lightContent {
         didSet {
             self.setNeedsStatusBarAppearanceUpdate()
@@ -19,6 +20,7 @@ class BaseNavigationController: UINavigationController {
             self.setNeedsStatusBarAppearanceUpdate()
         }
     }
+    var supportedOrientations: UIInterfaceOrientationMask = .allButUpsideDown
     
     // MARK: - Public Methods
     
@@ -28,6 +30,14 @@ class BaseNavigationController: UINavigationController {
     
     override var preferredStatusBarStyle : UIStatusBarStyle {
         return self.statusBarStyle
+    }
+    
+    override var shouldAutorotate : Bool {
+        return true
+    }
+    
+    override var supportedInterfaceOrientations : UIInterfaceOrientationMask {
+        return self.supportedOrientations
     }
 }
 
