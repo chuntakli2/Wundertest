@@ -101,7 +101,9 @@ class TaskCell: UITableViewCell {
             
             let metrics = ["SPACING": GENERAL_SPACING,
                            "WIDTH": GENERAL_ITEM_WIDTH,
-                           "HEIGHT": GENERAL_ITEM_HEIGHT]
+                           "HEIGHT": GENERAL_ITEM_HEIGHT,
+                           "SMALL_WIDTH": SMALL_ITEM_WIDTH,
+                           "SMALL_HEIGHT": SMALL_ITEM_HEIGHT]
             
             self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|-(SPACING)-[button(WIDTH)]-(SPACING)-[title]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
 
@@ -111,9 +113,9 @@ class TaskCell: UITableViewCell {
             
             self.contentView.addConstraint(NSLayoutConstraint(item: self.checkBoxButton!, attribute: .centerY, relatedBy: .equal, toItem: self.contentView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
             
-            self.checkBoxButton!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "[image]", options: .directionMask, metrics: nil, views: views))
+            self.checkBoxButton!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "[image(SMALL_WIDTH)]", options: .directionMask, metrics: metrics, views: views))
             
-            self.checkBoxButton!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[image]", options: .directionMask, metrics: nil, views: views))
+            self.checkBoxButton!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[image(SMALL_HEIGHT)]", options: .directionMask, metrics: metrics, views: views))
             
             self.checkBoxButton!.addConstraint(NSLayoutConstraint(item: self.checkBoxImageView!, attribute: .centerX, relatedBy: .equal, toItem: self.checkBoxButton!, attribute: .centerX, multiplier: 1.0, constant: 0.0))
             

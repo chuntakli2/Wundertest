@@ -12,8 +12,9 @@ import RealmSwift
 class Task: Object {
     dynamic var id: Int = GKRandomSource.sharedRandom().nextInt()
     dynamic var title: String = ""
-    dynamic var dueDate: Date = Date()
-    dynamic var order: Order? = Order()
+    dynamic var dueDate: Date?
+    dynamic var order: Int = 0
+    dynamic var orderTimestamp: Int = Date.getCurrentTimestampInMilliseconds()
     dynamic var isCompleted: Bool = false
     dynamic var creationDate: Date = Date()
     dynamic var lastUpdatedDate: Date = Date()

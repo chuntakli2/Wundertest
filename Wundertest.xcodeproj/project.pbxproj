@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		00DB5BE7214D2E80558E4371 /* Pods_WundertestTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABA7D626454E405E862CA2CC /* Pods_WundertestTests.framework */; };
 		382F31F31DBFF3D500DBF440 /* DatePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 382F31F21DBFF3D500DBF440 /* DatePickerView.swift */; };
-		3876FE081DBF502C0093912E /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3876FE071DBF502C0093912E /* Order.swift */; };
 		3876FE0A1DBF7A880093912E /* ComposeTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3876FE091DBF7A880093912E /* ComposeTaskViewController.swift */; };
 		7F043548D4AEE550D3376853 /* Pods_WundertestUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 914FF6E98D0051D3EA712962 /* Pods_WundertestUITests.framework */; };
 		A47BC7E7AC26F89015B2FAD9 /* Pods_Wundertest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 167AC3DF9B646B4EAA157755 /* Pods_Wundertest.framework */; };
@@ -60,7 +59,6 @@
 		0C2CD38F0AE35AB9EF6514F9 /* Pods-Wundertest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wundertest.release.xcconfig"; path = "Pods/Target Support Files/Pods-Wundertest/Pods-Wundertest.release.xcconfig"; sourceTree = "<group>"; };
 		167AC3DF9B646B4EAA157755 /* Pods_Wundertest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Wundertest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		382F31F21DBFF3D500DBF440 /* DatePickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerView.swift; sourceTree = "<group>"; };
-		3876FE071DBF502C0093912E /* Order.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
 		3876FE091DBF7A880093912E /* ComposeTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposeTaskViewController.swift; sourceTree = "<group>"; };
 		65DEABD912F2EDAF141ECCC6 /* Pods-WundertestUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WundertestUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-WundertestUITests/Pods-WundertestUITests.release.xcconfig"; sourceTree = "<group>"; };
 		6FA15BB3A533FFF8F0022457 /* Pods-WundertestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WundertestTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-WundertestTests/Pods-WundertestTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -261,7 +259,6 @@
 			children = (
 				D76255C21DBE8CB50089A809 /* User.swift */,
 				D76255C41DBE8CBC0089A809 /* Task.swift */,
-				3876FE071DBF502C0093912E /* Order.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -593,7 +590,6 @@
 				D76255C71DBE8CD70089A809 /* TaskViewController.swift in Sources */,
 				D76255B91DBE856E0089A809 /* UIImage+Utils.swift in Sources */,
 				D76255C11DBE8C890089A809 /* RealmManager.swift in Sources */,
-				3876FE081DBF502C0093912E /* Order.swift in Sources */,
 				382F31F31DBFF3D500DBF440 /* DatePickerView.swift in Sources */,
 				D76255D11DBE93170089A809 /* PullToAddView.swift in Sources */,
 				D76255BF1DBE86030089A809 /* Config.swift in Sources */,

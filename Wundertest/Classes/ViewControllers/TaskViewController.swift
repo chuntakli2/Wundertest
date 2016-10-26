@@ -20,8 +20,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     private var tasks: Results<Task> {
         get {
             if (self._tasks == nil) {
-                self._tasks = TaskManager.sharedInstance.getTasksFromLocal(realm: RealmManager.sharedInstance.realm)
-                self.isEmptyTask = !(self._tasks!.count > 0)
+                self._tasks = TaskManager.sharedInstance.getTasksFrom(realm: RealmManager.sharedInstance.realm)
             }
             return _tasks!
         }
@@ -30,7 +29,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     private var incompletedTasks = [Task]()
     private var completedTasks = [Task]()
     private var displayedTasks = [Task]()
-    private var isEmptyTask = false
+
     private var isExpanded = false
     
     private var hasLoadedConstraints = false
@@ -58,18 +57,24 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     // MARK: - Implementation of UITableViewDataSource Protocols
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return (self.isEmptyTask ? 0 : ((self.completedTasks.count > 0) ? 2 : 1))
+        self.navigationItem.rightBarButtonItem?.isEnabled = (self.incompletedTasks.count > 0)
+        self.noTaskLabel?.isHidden = (self.tasks.count > 0)
+        return (self.tasks.count == 0 ? 0 : ((self.completedTasks.count > 0) ? 2 : 1))
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return ((section == 0) ? self.incompletedTasks.count : self.displayedTasks.count)
     }
     
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return ((section == 0) ? 0.0 : GENERAL_ITEM_HEIGHT)
+    }
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard (section != 0) else { return nil }
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "TaskSectionHeaderView") as! TaskSectionHeaderView
         header.delegate = self
-        header.isUserInteractionEnabled = (section != 0)
-        let headerTitle = ((section == 0) ? NSLocalizedString("inProgress.title", comment: "") : ((self.isExpanded) ? NSLocalizedString("hideCompleted.title", comment: "") : NSLocalizedString("showCompleted", comment: "")))
+        let headerTitle = ((self.isExpanded) ? NSLocalizedString("hideCompleted.title", comment: "") : NSLocalizedString("showCompleted.title", comment: ""))
         header.titleLabel?.attributedText = NSAttributedString(string: headerTitle, attributes: FONT_ATTR_MEDIUM_BLACK)
         return header
     }
@@ -83,6 +88,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         let task = tasks[indexPath.row]
         let fontAttribute = ((task.isCompleted) ? FONT_ATTR_LARGE_WHITE : FONT_ATTR_LARGE_BLACK)
         cell.titleLabel?.attributedText = NSAttributedString(string: task.title, attributes: fontAttribute)
+        cell.checkBoxImageView?.image = ((task.isCompleted) ? UIImage(named: "tick_white") : nil)
         return cell
     }
     
@@ -96,7 +102,10 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         if (sourceIndexPath != destinationIndexPath) {
-            print("moved: %@, %@", sourceIndexPath, destinationIndexPath)
+            let task = self.incompletedTasks[sourceIndexPath.row]
+            self.incompletedTasks.remove(at: sourceIndexPath.row)
+            self.incompletedTasks.insert(task, at: destinationIndexPath.row)
+            self.updateTasksOrder()
         }
     }
 
@@ -111,19 +120,20 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        let tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.displayedTasks)
+        let task = tasks[indexPath.row]
+        let composeTaskViewController = ComposeTaskViewController()
+        composeTaskViewController.delegate = self
+        composeTaskViewController.task = task
+        self.navigationController?.pushViewController(composeTaskViewController, animated: true)
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let editAction = UITableViewRowAction(style: .normal, title: NSLocalizedString("edit.title", comment: "")) { (action, indexPath) in
-            
-        }
-        editAction.backgroundColor = .blue
-        let deleteAction = UITableViewRowAction(style: .normal, title: NSLocalizedString("delete.title", comment: "")) { (action, indexPath) in
-
+        let deleteAction = UITableViewRowAction(style: .normal, title: NSLocalizedString("delete.title", comment: "")) { [unowned self] (action, indexPath) in
+            self.deleteTaskAt(indexPath: indexPath)
         }
         deleteAction.backgroundColor = .red
-        return [deleteAction, editAction]
+        return [deleteAction]
     }
     
     func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath {
@@ -153,27 +163,31 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         let realm = RealmManager.sharedInstance.realm
         try! realm.write {
             task.isCompleted = !task.isCompleted
+            task.lastUpdatedDate = Date()
+            task.order = ((task.isCompleted) ? -1 : 0)
         }
         self.separateTasks()
         
-//        self.tableView?.beginUpdates()
         self.tableView?.reloadData()
-//        self.tableView?.endUpdates()
+        self.updateTasksOrder()
     }
     
-    // MARK: - Implementation of ComposeTaskViewDelegate Protocols
+    // MARK: - Implementation of ComposeTaskViewControllerDelegate Protocols
     
-    func compose(task: Task) {
-        let realm = RealmManager.sharedInstance.realm
-        realm.beginWrite()
-        realm.add(task)
-        try! realm.commitWrite()
+    func composed() {
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
         self.separateTasks()
+        self.tableView?.reloadData()
+        self.updateTasksOrder()
+    }
+    
+    func saved() {
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
         self.tableView?.reloadData()
     }
     
     func cancel() {
-        
+        self.navigationItem.rightBarButtonItem?.isEnabled = (self.incompletedTasks.count > 0)
     }
     
     // MARK: - Events
@@ -181,8 +195,8 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     func rightBarButtonAction() {
         self.tableView?.setEditing(!(self.tableView!.isEditing), animated: true)
         let rightBarButtonItem = ((self.tableView!.isEditing) ? UIBarButtonItem(barButtonSystemItem: .done, target: self, action: .rightBarButtonAction) : UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: .rightBarButtonAction))
-        rightBarButtonItem.tintColor = .white
         self.navigationItem.setRightBarButton(rightBarButtonItem, animated: true)
+        self.tableView?.alwaysBounceVertical = !(self.tableView?.isEditing)!
     }
     
     // MARK: - Public Methods
@@ -191,6 +205,23 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         super.setup()
     }
     
+    func composeTask() {
+        guard !(self.tableView?.isEditing)! else {
+            self.tableView?.endRefreshing(at: .top)
+            return
+        }
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        let composeTaskViewController = ComposeTaskViewController()
+        composeTaskViewController.delegate = self
+        
+        self.addChildViewController(composeTaskViewController)
+        composeTaskViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(composeTaskViewController.view)
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[compose]|", options: .directionMask, metrics: nil, views: ["compose": composeTaskViewController.view!]))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[compose]|", options: .directionMask, metrics: nil, views: ["compose": composeTaskViewController.view!]))
+        self.tableView?.endRefreshing(at: .top)
+    }
+
     // MARK: - Private Methods
     
     private func getTasks() {
@@ -213,15 +244,31 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         }
     }
     
-    private func composeTask() {
-        let composeTaskViewController = ComposeTaskViewController()
-        composeTaskViewController.delegate = self
-        self.addChildViewController(composeTaskViewController)
-        composeTaskViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(composeTaskViewController.view)
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[compose]|", options: .directionMask, metrics: nil, views: ["compose": composeTaskViewController.view!]))
-        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[compose]|", options: .directionMask, metrics: nil, views: ["compose": composeTaskViewController.view!]))
-        self.tableView?.endRefreshing(at: .top)
+    private func deleteTaskAt(indexPath: IndexPath) {
+        var tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.displayedTasks)
+        let task = tasks[indexPath.row]
+        tasks.remove(at: indexPath.row)
+        TaskManager.sharedInstance.delete(task: task, realm: RealmManager.sharedInstance.realm)
+        self.separateTasks()
+        
+        if (tasks.count == 0) {
+            self.tableView?.reloadData()
+        } else {
+            self.tableView?.beginUpdates()
+            self.tableView?.deleteRows(at: [indexPath], with: .automatic)
+            self.tableView?.endUpdates()
+        }
+        self.updateTasksOrder()
+    }
+    
+    private func updateTasksOrder() {
+        let realm = RealmManager.sharedInstance.realm
+        realm.beginWrite()
+        for (index, task) in self.incompletedTasks.enumerated() {
+            task.order = index + 1
+            task.orderTimestamp = Date.getCurrentTimestampInMilliseconds()
+        }
+        try! realm.commitWrite()
     }
     
     // MARK: - Subviews
@@ -233,7 +280,6 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.tableView?.delegate = self
         self.tableView?.tableHeaderView = UIView()
         self.tableView?.tableFooterView = UIView()
-        self.tableView?.sectionHeaderHeight = GENERAL_ITEM_HEIGHT
         self.tableView?.rowHeight = GENERAL_CELL_HEIGHT
         self.tableView?.separatorStyle = .singleLine
         
@@ -294,7 +340,6 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        self.noTaskLabel?.isHidden = !self.isEmptyTask
         self.pullToAddView?.layoutSubviews()
     }
     
@@ -310,7 +355,6 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         super.viewDidLoad()
         
         let editBarButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: .rightBarButtonAction)
-        editBarButton.tintColor = .white
         self.navigationItem.rightBarButtonItem = editBarButton
         
         self.tableView?.register(TaskSectionHeaderView.self, forHeaderFooterViewReuseIdentifier: "TaskSectionHeaderView")

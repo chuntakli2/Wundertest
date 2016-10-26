@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let navigationBarBackground = UIImage.image(withColour: NAVIGATION_BAR_COLOUR)
         let appearance = UINavigationBar.appearance()
         appearance.setBackgroundImage(navigationBarBackground, for: .default)
-        appearance.tintColor = TINT_COLOUR
+        appearance.tintColor = .white
         appearance.titleTextAttributes = FONT_ATTR_LARGE_WHITE_BOLD
         
         let taskViewController = TaskViewController()
@@ -59,6 +59,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        let type = shortcutItem.type
+        if (type.contains("createTask")) {
+            let taskNavigationController = self.window?.rootViewController as! BaseNavigationController
+            taskNavigationController.popToRootViewController(animated: false)
+            let taskViewController = taskNavigationController.viewControllers.first as! TaskViewController
+            taskViewController.composeTask()
+        }
+    }
 }
 

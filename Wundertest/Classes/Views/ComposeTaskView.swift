@@ -20,8 +20,8 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
     private var blurBackgroundView: UIVisualEffectView?
     private var baseView: UIView?
     private var blurBaseView: UIVisualEffectView?
+    private var stackView: UIStackView?
     private var titleLabel: UILabel?
-    private var countdownLabel: UILabel?
     private var textView: UITextView?
     private var blurTextView: UIVisualEffectView?
     private var dateButton: UIButton?
@@ -34,8 +34,24 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
     
     private var blurTextViewWidthConstraint: NSLayoutConstraint?
     private var blurTextViewHeightConstraint: NSLayoutConstraint?
-    
-    private var dueDate = Date()
+
+    var task: Task? {
+        didSet {
+            if let task = self.task {
+                self.title = task.title
+                self.textView?.text = task.title
+                self.dueDate = task.dueDate
+                
+                self.titleLabel?.isHidden = true
+                self.stackView?.removeArrangedSubview(self.titleLabel!)
+                self.buttonsStackView?.isHidden = true
+                self.stackView?.removeArrangedSubview(self.buttonsStackView!)
+            }
+        }
+    }
+
+    var title: String?
+    var dueDate: Date?
 
     private var hasLoadedConstraints = false
 
@@ -65,23 +81,21 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
     // MARK: - Accessors
     
     // MARK: - Implementation of UITextViewDelegate protocols
-    
-    func textViewDidChange(_ textView: UITextView) {
-        self.blurTextViewWidthConstraint?.constant = textView.bounds.width
-        self.blurTextViewHeightConstraint?.constant = textView.bounds.height + 2 * textView.contentSize.height
-        
-        let count = textView.text.characters.count
-        let countdownString = String(format: "%d / %d", count, MAXIMUM_TEXT_COUNT)
-        let attributes = ((count <= MAXIMUM_TEXT_COUNT) ? FONT_ATTR_SMALL_BLACK : FONT_ATTR_SMALL_RED)
-        textView.textColor = ((count <= MAXIMUM_TEXT_COUNT) ? FONT_COLOUR_BLACK : FONT_COLOUR_RED)
-        self.countdownLabel?.attributedText = NSAttributedString(string: countdownString, attributes: attributes)
-    }
-    
+
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if (text == "\n") {
             textView.resignFirstResponder()
         }
         return (text != "\n")
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+        self.blurTextViewWidthConstraint?.constant = textView.bounds.width
+        self.blurTextViewHeightConstraint?.constant = textView.bounds.height + 2 * textView.contentSize.height
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        self.title = textView.text
     }
     
     // MARK: - Implementation of DatePickerViewDelegate Protocols
@@ -105,35 +119,11 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
     }
     
     func dateButtonAction() {
-        self.textView?.resignFirstResponder()
-        
-        let datePickerView = DatePickerView()
-        datePickerView.delegate = self
-        datePickerView.datePicker?.datePickerMode = .date
-        datePickerView.titleLabel?.attributedText = NSAttributedString(string: NSLocalizedString("date.title", comment: ""), attributes: FONT_ATTR_MEDIUM_BLACK)
-        
-        datePickerView.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(datePickerView)
-        
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[date]|", options: .directionMask, metrics: nil, views: ["date": datePickerView]))
-        
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[date]|", options: .directionMask, metrics: nil, views: ["date": datePickerView]))
+        self.showDatePickerView(isDateMode: true)
     }
     
     func timeButtonAction() {
-        self.textView?.resignFirstResponder()
-        
-        let datePickerView = DatePickerView()
-        datePickerView.delegate = self
-        datePickerView.datePicker?.datePickerMode = .dateAndTime
-        datePickerView.titleLabel?.attributedText = NSAttributedString(string: NSLocalizedString("time.title", comment: ""), attributes: FONT_ATTR_MEDIUM_BLACK)
-        
-        datePickerView.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(datePickerView)
-        
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[date]|", options: .directionMask, metrics: nil, views: ["date": datePickerView]))
-        
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[date]|", options: .directionMask, metrics: nil, views: ["date": datePickerView]))
+        self.showDatePickerView(isDateMode: false)
     }
     
     func cancelButtonAction() {
@@ -144,7 +134,7 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
     
     func saveButtonAction() {
         let count = self.textView?.text.characters.count ?? 0
-        guard (count > 0 && count <= MAXIMUM_TEXT_COUNT) else { return }
+        guard (count > 0) else { return }
         
         self.dismiss { [unowned self] (completed) in
             if let title = self.textView?.text {
@@ -157,14 +147,42 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
 
     // MARK: - Public Methods
     
-    func updateTextView(withText text: String?) {
-        self.textView?.text = text
-        let count = text?.characters.count ?? 0
-        let countdownString = String(format: "%d / %d", count, MAXIMUM_TEXT_COUNT)
-        self.countdownLabel?.attributedText = NSAttributedString(string: countdownString, attributes: FONT_ATTR_SMALL_BLACK)
+    func show(animated: Bool) {
+        if (animated) {
+            self.baseView?.transform = CGAffineTransform(translationX: 0.0, y: -UIScreen.main.bounds.height)
+            UIView.animate(withDuration: ANIMATION_DURATION, animations: {
+                self.baseView?.transform = .identity
+            })
+        }
+    }
+    
+    func activateKeyboard() {
+        self.textView?.becomeFirstResponder()
+    }
+    
+    func deactivateKeyboard() {
+        self.textView?.resignFirstResponder()
     }
     
     // MARK: - Private Methods
+    
+    private func showDatePickerView(isDateMode: Bool) {
+        self.textView?.resignFirstResponder()
+        
+        let datePickerView = DatePickerView()
+        datePickerView.delegate = self
+        datePickerView.datePicker?.datePickerMode = (isDateMode ? .date : .dateAndTime)
+        let title = (isDateMode ? NSLocalizedString("date.title", comment: "") : NSLocalizedString("time.title", comment: ""))
+        datePickerView.titleLabel?.attributedText = NSAttributedString(string: title, attributes: FONT_ATTR_MEDIUM_BLACK)
+        datePickerView.datePicker?.date = self.dueDate ?? Date()
+        
+        datePickerView.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(datePickerView)
+        
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[date]|", options: .directionMask, metrics: nil, views: ["date": datePickerView]))
+        
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[date]|", options: .directionMask, metrics: nil, views: ["date": datePickerView]))
+    }
     
     private func dismiss(callback: @escaping (Bool) -> Void) {
         UIView.animate(withDuration: ANIMATION_DURATION, animations: {
@@ -180,13 +198,6 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
         
         let tap = UITapGestureRecognizer(target: self, action: .tapAction)
         self.addGestureRecognizer(tap)
-        
-        self.baseView?.transform = CGAffineTransform(translationX: 0.0, y: -UIScreen.main.bounds.height)
-        UIView.animate(withDuration: ANIMATION_DURATION, animations: {
-            self.baseView?.transform = .identity
-        }) { [unowned self] (isCompleted) in
-            self.textView?.becomeFirstResponder()
-        }
     }
     
     // MARK: - Subviews
@@ -205,14 +216,16 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
         self.blurBaseView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
     }
     
+    private func setupStackView() {
+        self.stackView = UIStackView()
+        self.stackView?.axis = .vertical
+        self.stackView?.spacing = GENERAL_SPACING
+        self.stackView?.alignment = .center
+    }
+    
     private func setupTitleLabel() {
         self.titleLabel = UILabel()
         self.titleLabel?.attributedText = NSAttributedString(string: NSLocalizedString("newTask.title", comment: ""), attributes: FONT_ATTR_LARGE_BLACK)
-    }
-    
-    private func setupCountdownLabel() {
-        self.countdownLabel = UILabel()
-        self.countdownLabel?.attributedText = NSAttributedString(string: String(format: "0 / %d", MAXIMUM_TEXT_COUNT), attributes: FONT_ATTR_SMALL_BLACK)
     }
     
     private func setupTextView() {
@@ -296,17 +309,17 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
         self.blurBaseView?.translatesAutoresizingMaskIntoConstraints = false
         self.baseView?.addSubview(self.blurBaseView!)
         
+        self.setupStackView()
+        self.stackView?.translatesAutoresizingMaskIntoConstraints = false
+        self.baseView?.addSubview(self.stackView!)
+        
         self.setupTitleLabel()
         self.titleLabel?.translatesAutoresizingMaskIntoConstraints = false
-        self.baseView?.addSubview(self.titleLabel!)
-        
-        self.setupCountdownLabel()
-        self.countdownLabel?.translatesAutoresizingMaskIntoConstraints = false
-        self.baseView?.addSubview(self.countdownLabel!)
+        self.stackView?.addArrangedSubview(self.titleLabel!)
         
         self.setupTextView()
         self.textView?.translatesAutoresizingMaskIntoConstraints = false
-        self.baseView?.addSubview(self.textView!)
+        self.stackView?.addArrangedSubview(self.textView!)
         
         self.setupBlurTextView()
         self.blurTextView?.translatesAutoresizingMaskIntoConstraints = false
@@ -314,15 +327,15 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
         
         self.setupDateButton()
         self.dateButton?.translatesAutoresizingMaskIntoConstraints = false
-        self.baseView?.addSubview(self.dateButton!)
+        self.stackView?.addArrangedSubview(self.dateButton!)
         
         self.setupTimeButton()
         self.timeButton?.translatesAutoresizingMaskIntoConstraints = false
-        self.baseView?.addSubview(self.timeButton!)
+        self.stackView?.addArrangedSubview(self.timeButton!)
         
         self.setupButtonsStackView()
         self.buttonsStackView?.translatesAutoresizingMaskIntoConstraints = false
-        self.baseView?.addSubview(self.buttonsStackView!)
+        self.stackView?.addArrangedSubview(self.buttonsStackView!)
         
         self.setupCancelButton()
         self.cancelButton?.translatesAutoresizingMaskIntoConstraints = false
@@ -342,8 +355,8 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
             let views = ["blurBackground": self.blurBackgroundView!,
                          "base": self.baseView!,
                          "blurBase": self.blurBaseView!,
+                         "stack": self.stackView!,
                          "title": self.titleLabel!,
-                         "countdown": self.countdownLabel!,
                          "text": self.textView!,
                          "blurText": self.blurTextView!,
                          "date": self.dateButton!,
@@ -371,26 +384,32 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
             
             self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[blurBase]|", options: .directionMask, metrics: metrics, views: views))
             
-            self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|-(SPACING)-[title]-(>=SPACING)-|", options: .directionMask, metrics: metrics, views: views))
-            
-            self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "[countdown]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
-            
-            self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|-(SPACING)-[text]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
+            self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[stack]|", options: .directionMask, metrics: metrics, views: views))
 
-            self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|-(SPACING)-[date]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
+            self.stackView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|-(SPACING)-[title]-(>=SPACING)-|", options: .directionMask, metrics: metrics, views: views))
+                        
+            self.stackView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|-(SPACING)-[text]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
 
-            self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|-(SPACING)-[time]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
+            self.stackView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|-(SPACING)-[date]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
 
-            self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|-(SPACING)-[buttons]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
+            self.stackView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|-(SPACING)-[time]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
+
+            self.stackView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|-(SPACING)-[buttons]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
             
             self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[blurBase]|", options: .directionMask, metrics: nil, views: views))
-            
-            self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(SPACING)-[title]-(SPACING)-[text(TEXT_VIEW_HEIGHT)]-(SPACING)-[date(HEIGHT)]-(SPACING)-[time(HEIGHT)]-[buttons(HEIGHT)]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
-            
-            self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[countdown]", options: .directionMask, metrics: metrics, views: views))
-            
-            self.baseView!.addConstraint(NSLayoutConstraint(item: self.countdownLabel!, attribute: .bottom, relatedBy: .equal, toItem: self.titleLabel!, attribute: .bottom, multiplier: 1.0, constant: 0.0))
-            
+
+            self.baseView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(SPACING)-[stack]-(SPACING)-|", options: .directionMask, metrics: metrics, views: views))
+
+            self.stackView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[title]", options: .directionMask, metrics: metrics, views: views))
+
+            self.stackView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[text(TEXT_VIEW_HEIGHT)]", options: .directionMask, metrics: metrics, views: views))
+
+            self.stackView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[date(HEIGHT)]", options: .directionMask, metrics: metrics, views: views))
+
+            self.stackView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[time(HEIGHT)]", options: .directionMask, metrics: metrics, views: views))
+
+            self.stackView!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[buttons(HEIGHT)]", options: .directionMask, metrics: metrics, views: views))
+
             self.blurTextViewWidthConstraint = NSLayoutConstraint(item: self.blurTextView!, attribute: .width, relatedBy: .equal, toItem: self.textView!, attribute: .width, multiplier: 1.0, constant: 0.0)
             
             self.blurTextViewHeightConstraint = NSLayoutConstraint(item: self.blurTextView!, attribute: .height, relatedBy: .equal, toItem: self.textView!, attribute: .height, multiplier: 1.0, constant: 0.0)

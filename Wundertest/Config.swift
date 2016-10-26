@@ -102,7 +102,6 @@ let TEXT_VIEW_HEIGHT: CGFloat = 64.0
 let ANIMATION_DURATION = 0.3
 
 let WHITESPACE = " "
-let MAXIMUM_TEXT_COUNT = 140
 
 // MARK: - Keys
 

@@ -9,7 +9,8 @@
 import UIKit
 
 protocol ComposeTaskViewControllerDelegate: class {
-    func compose(task: Task)
+    func composed()
+    func saved()
     func cancel()
 }
 
@@ -18,6 +19,8 @@ class ComposeTaskViewController: BaseViewController, ComposeTaskViewDelegate {
     weak var delegate: ComposeTaskViewControllerDelegate?
     
     private var composeTaskView: ComposeTaskView?
+    
+    var task: Task?
     
     private var hasLoadedConstraints = false
     
@@ -44,7 +47,8 @@ class ComposeTaskViewController: BaseViewController, ComposeTaskViewDelegate {
     // MARK: - Implementation of ComposeTaskViewDelegate Protocols
     
     func compose(task: Task) {
-        self.delegate?.compose(task: task)
+        TaskManager.sharedInstance.create(task: task, realm: RealmManager.sharedInstance.realm)
+        self.delegate?.composed()
         self.removeFromParentViewController()
         self.view.removeFromSuperview()
     }
@@ -53,6 +57,22 @@ class ComposeTaskViewController: BaseViewController, ComposeTaskViewDelegate {
         self.removeFromParentViewController()
         self.view.removeFromSuperview()
         self.delegate?.cancel()
+    }
+    
+    // MARK: - Events
+    
+    func saveAction() {
+        self.composeTaskView?.deactivateKeyboard()
+        
+        let task = Task()
+        task.id = (self.task?.id)!
+        task.title = self.composeTaskView?.title ?? (self.task?.title)!
+        task.dueDate = self.composeTaskView?.dueDate
+        task.lastUpdatedDate = Date()
+        
+        TaskManager.sharedInstance.update(task: task, realm: RealmManager.sharedInstance.realm)
+        let _ = self.navigationController?.popViewController(animated: true)
+        self.delegate?.saved()
     }
     
     // MARK: - Subviews
@@ -97,7 +117,13 @@ class ComposeTaskViewController: BaseViewController, ComposeTaskViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        self.composeTaskView?.task = self.task
+        self.composeTaskView?.show(animated: (self.task == nil))
+        
+        self.title = NSLocalizedString("edit.title", comment: "")
+        let saveBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: .saveAction)
+        self.navigationItem.rightBarButtonItem = saveBarButtonItem
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -107,7 +133,7 @@ class ComposeTaskViewController: BaseViewController, ComposeTaskViewDelegate {
         baseNavigationController?.supportedOrientations = .portrait
         
         let value = UIInterfaceOrientation.portrait.rawValue
-        UIDevice.current.setValue(value, forKey: "orientation")
+        UIDevice.current.setValue(value, forKey: "orientation")        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -115,6 +141,17 @@ class ComposeTaskViewController: BaseViewController, ComposeTaskViewDelegate {
         
         let baseNavigationController = APP_DELEGATE.window?.rootViewController as? BaseNavigationController
         baseNavigationController?.supportedOrientations = .allButUpsideDown
-
+        
+        self.composeTaskView?.deactivateKeyboard()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.composeTaskView?.activateKeyboard()
+    }
+}
+
+private extension Selector {
+    static let saveAction = #selector(ComposeTaskViewController.saveAction)
 }

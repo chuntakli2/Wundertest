@@ -28,13 +28,31 @@ class TaskManager: NSObject {
     
     // MARK: - Public Methods
     
-    func getTasksFromLocal(realm: Realm) -> Results<Task> {
-        let tasks = realm.objects(Task.self)
+    func getTasksFrom(realm: Realm) -> Results<Task> {
+        let tasks = realm.objects(Task.self).sorted(byProperty: "order", ascending: true)
         return tasks
     }
     
-    func createNewTask(task: Task, realm: Realm) {
-        
+    func getTask(taskId: Int, realm: Realm) -> Task? {
+        let predicate = NSPredicate(format: "id = %d", taskId)
+        return realm.objects(Task.self).filter(predicate).first
     }
     
+    func create(task: Task, realm: Realm) {
+        realm.beginWrite()
+        realm.add(task, update: true)
+        try! realm.commitWrite()
+    }
+    
+    func update(task: Task, realm: Realm) {
+        realm.beginWrite()
+        realm.add(task, update: true)
+        try! realm.commitWrite()
+    }
+    
+    func delete(task: Task, realm: Realm) {
+        realm.beginWrite()
+        realm.delete(task)
+        try! realm.commitWrite()
+    }
 }
