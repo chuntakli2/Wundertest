@@ -156,7 +156,7 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
         self.dueDate = date
     }
     
-    func cancel(date: Date) {
+    func cancel(date: Date?) {
         self.dueDate = date
     }
     
@@ -211,7 +211,7 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
         self.textView?.resignFirstResponder()
         
         self.datePickerView.title = (isDateMode ? NSLocalizedString("dueDate.title", comment: "") : NSLocalizedString("time.title", comment: ""))
-        self.datePickerView.date = self.dueDate ?? Date()
+        self.datePickerView.date = self.dueDate
         self.datePickerView.mode = (isDateMode ? .date : .dateAndTime)
         self.datePickerView.show()
     }

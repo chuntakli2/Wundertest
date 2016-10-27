@@ -64,6 +64,26 @@ class TaskManager: NSObject {
         }
     }
     
+    func update(taskId: Int, isCompleted: Bool, order: Int, realm: Realm) {
+        if let task = self.getTask(taskId: taskId, realm: realm) {
+            realm.beginWrite()
+            task.isCompleted = isCompleted
+            task.lastUpdatedDate = Date()
+            task.order = order
+            task.orderTimestamp = Date.getCurrentTimestampInMilliseconds()
+            try! realm.commitWrite()
+        }
+    }
+    
+    func update(taskId: Int, order: Int, realm: Realm) {
+        if let task = self.getTask(taskId: taskId, realm: realm) {
+            realm.beginWrite()
+            task.order = order
+            task.orderTimestamp = Date.getCurrentTimestampInMilliseconds()
+            try! realm.commitWrite()
+        }
+    }
+    
     func delete(task: Task, realm: Realm) {
         realm.beginWrite()
         realm.delete(task)

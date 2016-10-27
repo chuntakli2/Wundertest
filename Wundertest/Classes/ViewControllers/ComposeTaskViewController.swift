@@ -107,8 +107,6 @@ class ComposeTaskViewController: BaseViewController, ComposeTaskViewDelegate {
     
     override func loadView() {
         super.loadView()
-        
-        self.view.backgroundColor = .clear
     }
     
     override func viewDidLoad() {

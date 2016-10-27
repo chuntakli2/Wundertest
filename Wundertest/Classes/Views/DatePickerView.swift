@@ -11,7 +11,7 @@ import UIKit
 protocol DatePickerViewDelegate: class {
     func changed(date: Date)
     func done(date: Date)
-    func cancel(date: Date)
+    func cancel(date: Date?)
 }
 
 class DatePickerView: UIView {
@@ -27,9 +27,9 @@ class DatePickerView: UIView {
             self.titleLabel?.attributedText = NSAttributedString(string: self.title, attributes: FONT_ATTR_MEDIUM_BLACK)
         }
     }
-    var date: Date = Date() {
+    var date: Date? {
         didSet {
-            self.datePicker?.date = date
+            self.datePicker?.date = date ?? Date()
         }
     }
     var mode: UIDatePickerMode = .date {

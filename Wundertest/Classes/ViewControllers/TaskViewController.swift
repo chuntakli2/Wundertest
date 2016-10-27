@@ -167,11 +167,8 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         let tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.completedTasks)
         let task = tasks[indexPath.row]
         let realm = RealmManager.sharedInstance.realm
-        try! realm.write {
-            task.isCompleted = !task.isCompleted
-            task.lastUpdatedDate = Date()
-            task.order = ((task.isCompleted) ? -1 : 0)
-        }
+        let isCompleted = !task.isCompleted
+        TaskManager.sharedInstance.update(taskId: task.id, isCompleted: isCompleted, order: (isCompleted ? -1 : 0), realm: realm)
         self.separateTasks()
         
         self.tableView?.reloadData()
@@ -201,7 +198,8 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     
     func rightBarButtonAction() {
         self.tableView?.setEditing(!(self.tableView!.isEditing), animated: true)
-        let rightBarButtonItem = ((self.tableView!.isEditing) ? UIBarButtonItem(barButtonSystemItem: .done, target: self, action: .rightBarButtonAction) : UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: .rightBarButtonAction))
+        let itemType = ((self.tableView!.isEditing) ? UIBarButtonSystemItem.done : UIBarButtonSystemItem.edit)
+        let rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: itemType, target: self, action: .rightBarButtonAction)
         self.navigationItem.setRightBarButton(rightBarButtonItem, animated: true)
         self.tableView?.alwaysBounceVertical = !(self.tableView?.isEditing)!
     }
@@ -266,12 +264,9 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     
     private func updateTasksOrder() {
         let realm = RealmManager.sharedInstance.realm
-        realm.beginWrite()
         for (index, task) in self.incompletedTasks.enumerated() {
-            task.order = index + 1
-            task.orderTimestamp = Date.getCurrentTimestampInMilliseconds()
+            TaskManager.sharedInstance.update(taskId: task.id, order: (index + 1), realm: realm)
         }
-        try! realm.commitWrite()
     }
     
     // MARK: - Subviews
