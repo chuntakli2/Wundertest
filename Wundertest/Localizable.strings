@@ -17,5 +17,6 @@
 "hideCompleted.title" = "Hide Completed";
 "showCompleted.title" = "Show Completed";
 "pullToAdd.message" = "Pull to add new task";
-"date.title" = "Date";
+"dueDate.title" = "Due Date";
 "time.title" = "Time";
+"addDueDate.title" = "Add due date";

@@ -2,25 +2,41 @@
 //  DatePickerView.swift
 //  Wundertest
 //
-//  Created by Eddie Li on 25/10/16.
+//  Created by Chun Tak Li on 24/10/2016.
 //  Copyright © 2016 Chun Tak Li. All rights reserved.
 //
 
 import UIKit
 
 protocol DatePickerViewDelegate: class {
-    func changed()
+    func changed(date: Date)
     func done(date: Date)
-    func cancel()
+    func cancel(date: Date)
 }
 
 class DatePickerView: UIView {
     
     weak var delegate: DatePickerViewDelegate?
 
-    var toolBar: UIToolbar?
-    var titleLabel: UILabel?
-    var datePicker: UIDatePicker?
+    private var toolBar: UIToolbar?
+    private var titleLabel: UILabel?
+    private var datePicker: UIDatePicker?
+    
+    var title: String = "" {
+        didSet {
+            self.titleLabel?.attributedText = NSAttributedString(string: self.title, attributes: FONT_ATTR_MEDIUM_BLACK)
+        }
+    }
+    var date: Date = Date() {
+        didSet {
+            self.datePicker?.date = date
+        }
+    }
+    var mode: UIDatePickerMode = .date {
+        didSet {
+            self.datePicker?.datePickerMode = self.mode
+        }
+    }
     
     private var hasLoadedConstraints = false
 
@@ -49,27 +65,25 @@ class DatePickerView: UIView {
     // MARK: - Events
     
     func dateChanged() {
-        self.delegate?.changed()
+        self.delegate?.changed(date: (self.datePicker?.date)!)
     }
     
     func doneAction() {
         self.delegate?.done(date: (self.datePicker?.date)!)
-        self.dismiss { (completed) in
-            
-        }
+        self.dismiss()
     }
     
     func cancelAction() {
-        self.dismiss { [unowned self] (completed) in
-            self.removeFromSuperview()
-            self.delegate?.cancel()
-        }
+        self.delegate?.cancel(date: self.date)
+        self.dismiss()
     }
     
     // MARK: - Public Methods
     
-    func updateDatePickerView() {
-        
+    func show() {
+        UIView.animate(withDuration: ANIMATION_DURATION, animations: {
+            self.alpha = 1.0
+        })
     }
     
     // MARK: - Private Methods
@@ -78,19 +92,12 @@ class DatePickerView: UIView {
         self.backgroundColor = .white
         self.translatesAutoresizingMaskIntoConstraints = true
         self.setupSubviews()
-        
-        self.alpha = 0.0
-        UIView.animate(withDuration: ANIMATION_DURATION, animations: {
-            self.alpha = 1.0
-        })
     }
     
-    private func dismiss(callback: @escaping (Bool) -> Void) {
+    private func dismiss() {
         UIView.animate(withDuration: ANIMATION_DURATION, animations: {
             self.alpha = 0.0
-        }) { (completed) in
-            callback(completed)
-        }
+        })
     }
 
     // MARK: - Subviews

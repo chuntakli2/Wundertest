@@ -8,6 +8,26 @@
 
 import UIKit
 
+func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l < r
+    case (nil, _?):
+        return true
+    default:
+        return false
+    }
+}
+
+func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l > r
+    default:
+        return rhs < lhs
+    }
+}
+
 class BaseViewController: UIViewController {
     
     fileprivate var loadingView: LoadingView?
@@ -109,7 +129,7 @@ class BaseViewController: UIViewController {
     
     override func loadView() {
         self.view = UIView()
-        self.view.backgroundColor = APP_GRAY_COLOUR
+        self.view.backgroundColor = .white
         self.view.tintColor = TINT_COLOUR
         self.view.translatesAutoresizingMaskIntoConstraints = true
         

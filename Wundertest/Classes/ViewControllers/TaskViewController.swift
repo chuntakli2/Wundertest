@@ -28,7 +28,6 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     private var _tasks: Results<Task>?
     private var incompletedTasks = [Task]()
     private var completedTasks = [Task]()
-    private var displayedTasks = [Task]()
 
     private var isExpanded = false
     
@@ -52,8 +51,6 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.tableView?.removePullToRefresh((self.tableView?.topPullToRefresh)!)
     }
     
-    // MARK: - Accessors
-    
     // MARK: - Implementation of UITableViewDataSource Protocols
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -63,7 +60,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return ((section == 0) ? self.incompletedTasks.count : self.displayedTasks.count)
+        return ((section == 0) ? self.incompletedTasks.count : (self.isExpanded ? self.completedTasks.count : 0))
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -84,10 +81,25 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         cell.delegate = self
         cell.indexPath = indexPath
         cell.showsReorderControl = true
-        let tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.displayedTasks)
+        let tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.completedTasks)
         let task = tasks[indexPath.row]
-        let fontAttribute = ((task.isCompleted) ? FONT_ATTR_LARGE_WHITE : FONT_ATTR_LARGE_BLACK)
-        cell.titleLabel?.attributedText = NSAttributedString(string: task.title, attributes: fontAttribute)
+        cell.titleLabel?.attributedText = nil
+        cell.dueDateLabel?.attributedText = nil
+        var attributes: [String: Any] = FONT_ATTR_LARGE_BLACK
+        if (task.isCompleted) {
+            attributes[NSStrikethroughStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+        }
+        cell.titleLabel?.attributedText = NSAttributedString(string: task.title, attributes: attributes)
+        if (indexPath.section == 0) {
+            if let date = task.dueDate {
+                let calendar = Calendar.current
+                let year = calendar.component(.year, from: date)
+                let month = calendar.component(.month, from: date)
+                let day = calendar.component(.day, from: date)
+                let date = String(format: "%d-%d-%d", day, month, year)
+                cell.dueDateLabel?.attributedText = NSAttributedString(string: date, attributes: FONT_ATTR_SMALL_DEFAULT_TINT)
+            }
+        }
         cell.checkBoxImageView?.image = ((task.isCompleted) ? UIImage(named: "tick_white") : nil)
         return cell
     }
@@ -120,7 +132,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.displayedTasks)
+        let tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.completedTasks)
         let task = tasks[indexPath.row]
         let composeTaskViewController = ComposeTaskViewController()
         composeTaskViewController.delegate = self
@@ -144,12 +156,6 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     
     func toggleClicked(section: Int) {
         self.isExpanded = !self.isExpanded
-        if self.isExpanded {
-            self.displayedTasks.append(contentsOf: self.completedTasks)
-        } else {
-            self.displayedTasks.removeAll()
-        }
-        
         self.tableView?.beginUpdates()
         self.tableView?.reloadSections(IndexSet(integer: 1), with: .automatic)
         self.tableView?.endUpdates()
@@ -158,7 +164,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     // MARK: - Implementation of TaskCellDelegate Protocols
     
     func completed(indexPath: IndexPath) {
-        let tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.displayedTasks)
+        let tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.completedTasks)
         let task = tasks[indexPath.row]
         let realm = RealmManager.sharedInstance.realm
         try! realm.write {
@@ -170,6 +176,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         
         self.tableView?.reloadData()
         self.updateTasksOrder()
+        self.tableView?.setContentOffset(.zero, animated: true)
     }
     
     // MARK: - Implementation of ComposeTaskViewControllerDelegate Protocols
@@ -229,23 +236,19 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     }
     
     private func separateTasks() {
+        let realm = RealmManager.sharedInstance.realm
         self.incompletedTasks.removeAll()
         self.completedTasks.removeAll()
-        self.displayedTasks.removeAll()
-        self.tasks.forEach { (task) in
-            if (task.isCompleted) {
-                self.completedTasks.append(task)
-                if (self.isExpanded) {
-                    self.displayedTasks.append(task)
-                }
-            } else {
-                self.incompletedTasks.append(task)
-            }
+        TaskManager.sharedInstance.getIncompletedTasksFrom(realm: realm).forEach { (task) in
+            self.incompletedTasks.append(task)
+        }
+        TaskManager.sharedInstance.getCompletedTasksFrom(realm: realm).forEach { (task) in
+            self.completedTasks.append(task)
         }
     }
     
     private func deleteTaskAt(indexPath: IndexPath) {
-        var tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.displayedTasks)
+        var tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.completedTasks)
         let task = tasks[indexPath.row]
         tasks.remove(at: indexPath.row)
         TaskManager.sharedInstance.delete(task: task, realm: RealmManager.sharedInstance.realm)
@@ -347,8 +350,6 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     
     override func loadView() {
         super.loadView()
-        
-        self.view.backgroundColor = .clear
     }
     
     override func viewDidLoad() {

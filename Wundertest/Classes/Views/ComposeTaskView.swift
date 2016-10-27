@@ -13,7 +13,7 @@ protocol ComposeTaskViewDelegate: class {
     func cancel()
 }
 
-class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
+class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackViewDelegate, DatePickerViewDelegate {
     
     weak var delegate: ComposeTaskViewDelegate?
     
@@ -24,13 +24,12 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
     private var titleLabel: UILabel?
     private var textView: UITextView?
     private var blurTextView: UIVisualEffectView?
-    private var dateButton: UIButton?
-    private var timeButton: UIButton?
+    private var dateButton: DateTimeRemoveButtonStackView?
+    private var timeButton: DateTimeRemoveButtonStackView?
     private var buttonsStackView: UIStackView?
     private var cancelButton: UIButton?
     private var saveButton: UIButton?
     private var blurSaveButton: UIVisualEffectView?
-    private var datePickerView: DatePickerView?
     
     private var blurTextViewWidthConstraint: NSLayoutConstraint?
     private var blurTextViewHeightConstraint: NSLayoutConstraint?
@@ -41,17 +40,41 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
                 self.title = task.title
                 self.textView?.text = task.title
                 self.dueDate = task.dueDate
-                
+
                 self.titleLabel?.isHidden = true
-                self.stackView?.removeArrangedSubview(self.titleLabel!)
                 self.buttonsStackView?.isHidden = true
-                self.stackView?.removeArrangedSubview(self.buttonsStackView!)
             }
         }
     }
 
     var title: String?
-    var dueDate: Date?
+    var dueDate: Date? {
+        didSet {
+            if let date = self.dueDate {
+                let calendar = Calendar.current
+                let year = calendar.component(.year, from: date)
+                let month = calendar.component(.month, from: date)
+                let day = calendar.component(.day, from: date)
+                
+                var attributes: [String: Any] = FONT_ATTR_MEDIUM_DEFAULT_TINT
+                attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+                let dateString = String(format: "%d - %d - %d", day, month, year)
+                self.dateButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: dateString, attributes: attributes), for: .normal)
+                self.dateButton?.showRemoveButton()
+                
+                let hour = calendar.component(.hour, from: date)
+                let minute = calendar.component(.minute, from: date)
+                
+                let timeString = String(format: "%d : %d", hour, minute)
+                self.timeButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: timeString, attributes: attributes), for: .normal)
+            } else {
+                var attributes: [String: Any] = FONT_ATTR_MEDIUM_DEFAULT_TINT
+                attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+                self.dateButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: NSLocalizedString("addDueDate.title", comment: ""), attributes: attributes), for: .normal)
+                self.dateButton?.hideRemoveButton()
+            }
+        }
+    }
 
     private var hasLoadedConstraints = false
 
@@ -80,7 +103,32 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
     
     // MARK: - Accessors
     
-    // MARK: - Implementation of UITextViewDelegate protocols
+    private lazy var datePickerView: DatePickerView = {
+        let _datePickerView = DatePickerView()
+        _datePickerView.delegate = self
+        _datePickerView.alpha = 0.0
+        _datePickerView.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(_datePickerView)
+        
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[date]|", options: .directionMask, metrics: nil, views: ["date": _datePickerView]))
+        
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[date]|", options: .directionMask, metrics: nil, views: ["date": _datePickerView]))
+        return _datePickerView
+    }()
+    
+    // MARK: - Implementation of DateTimeRemoveButtonStackViewDelegate Protocols
+    
+    func dateTimeButtonPressed(type: DateTimeType) {
+        self.showDatePickerView(isDateMode: (type == .date))
+    }
+    
+    func removeButtonPressed(type: DateTimeType) {
+        if (type == .date) {
+            self.dueDate = nil
+        }
+    }
+    
+    // MARK: - Implementation of UITextViewDelegate Protocols
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if (text == "\n") {
@@ -91,7 +139,7 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
 
     func textViewDidChange(_ textView: UITextView) {
         self.blurTextViewWidthConstraint?.constant = textView.bounds.width
-        self.blurTextViewHeightConstraint?.constant = textView.bounds.height + 2 * textView.contentSize.height
+        self.blurTextViewHeightConstraint?.constant = textView.bounds.height + 2.0 * textView.contentSize.height
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -100,30 +148,22 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
     
     // MARK: - Implementation of DatePickerViewDelegate Protocols
     
-    func changed() {
-        
+    func changed(date: Date) {
+        self.dueDate = date
     }
     
     func done(date: Date) {
         self.dueDate = date
     }
     
-    func cancel() {
-        
+    func cancel(date: Date) {
+        self.dueDate = date
     }
     
     // MARK: - Events
     
     func tapAction() {
         self.textView?.resignFirstResponder()
-    }
-    
-    func dateButtonAction() {
-        self.showDatePickerView(isDateMode: true)
-    }
-    
-    func timeButtonAction() {
-        self.showDatePickerView(isDateMode: false)
     }
     
     func cancelButtonAction() {
@@ -140,6 +180,7 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
             if let title = self.textView?.text {
                 let task = Task()
                 task.title = title
+                task.dueDate = self.dueDate
                 self.delegate?.compose(task: task)
             }
         }
@@ -169,19 +210,10 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
     private func showDatePickerView(isDateMode: Bool) {
         self.textView?.resignFirstResponder()
         
-        let datePickerView = DatePickerView()
-        datePickerView.delegate = self
-        datePickerView.datePicker?.datePickerMode = (isDateMode ? .date : .dateAndTime)
-        let title = (isDateMode ? NSLocalizedString("date.title", comment: "") : NSLocalizedString("time.title", comment: ""))
-        datePickerView.titleLabel?.attributedText = NSAttributedString(string: title, attributes: FONT_ATTR_MEDIUM_BLACK)
-        datePickerView.datePicker?.date = self.dueDate ?? Date()
-        
-        datePickerView.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(datePickerView)
-        
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[date]|", options: .directionMask, metrics: nil, views: ["date": datePickerView]))
-        
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[date]|", options: .directionMask, metrics: nil, views: ["date": datePickerView]))
+        self.datePickerView.title = (isDateMode ? NSLocalizedString("dueDate.title", comment: "") : NSLocalizedString("time.title", comment: ""))
+        self.datePickerView.date = self.dueDate ?? Date()
+        self.datePickerView.mode = (isDateMode ? .date : .dateAndTime)
+        self.datePickerView.show()
     }
     
     private func dismiss(callback: @escaping (Bool) -> Void) {
@@ -247,21 +279,19 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
     }
     
     private func setupDateButton() {
-        self.dateButton = UIButton(type: .system)
-        self.dateButton?.addTarget(self, action: .dateButtonAction, for: .touchUpInside)
-        self.dateButton?.layer.borderColor = TINT_COLOUR.cgColor
-        self.dateButton?.layer.borderWidth = 1.0
-        self.dateButton?.layer.cornerRadius = CORNER_RADIUS
-        self.dateButton?.backgroundColor = .red
+        self.dateButton = DateTimeRemoveButtonStackView()
+        self.dateButton?.delegate = self
+        self.dateButton?.dateTimeType = .date
+        var attributes: [String: Any] = FONT_ATTR_MEDIUM_DEFAULT_TINT
+        attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+        self.dateButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: NSLocalizedString("addDueDate.title", comment: ""), attributes: attributes), for: .normal)
     }
     
     private func setupTimeButton() {
-        self.timeButton = UIButton(type: .system)
-        self.timeButton?.addTarget(self, action: .timeButtonAction, for: .touchUpInside)
-        self.timeButton?.layer.borderColor = TINT_COLOUR.cgColor
-        self.timeButton?.layer.borderWidth = 1.0
-        self.timeButton?.layer.cornerRadius = CORNER_RADIUS
-        self.timeButton?.backgroundColor = .blue
+        self.timeButton = DateTimeRemoveButtonStackView()
+        self.timeButton?.delegate = self
+        self.timeButton?.dateTimeType = .time
+        self.timeButton?.isHidden = true
     }
     
     private func setupButtonsStackView() {
@@ -438,8 +468,6 @@ class ComposeTaskView: UIView, UITextViewDelegate, DatePickerViewDelegate {
 
 private extension Selector {
     static let tapAction = #selector(ComposeTaskView.tapAction)
-    static let dateButtonAction = #selector(ComposeTaskView.dateButtonAction)
-    static let timeButtonAction = #selector(ComposeTaskView.timeButtonAction)
     static let cancelButtonAction = #selector(ComposeTaskView.cancelButtonAction)
     static let saveButtonAction = #selector(ComposeTaskView.saveButtonAction)
 }

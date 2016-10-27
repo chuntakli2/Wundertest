@@ -33,6 +33,16 @@ class TaskManager: NSObject {
         return tasks
     }
     
+    func getIncompletedTasksFrom(realm: Realm) -> Results<Task> {
+        let predicate = NSPredicate(format: "isCompleted == false")
+        return self.getTasksFrom(realm: realm).filter(predicate)
+    }
+    
+    func getCompletedTasksFrom(realm: Realm) -> Results<Task> {
+        let predicate = NSPredicate(format: "isCompleted == true")
+        return self.getTasksFrom(realm: realm).filter(predicate)
+    }
+    
     func getTask(taskId: Int, realm: Realm) -> Task? {
         let predicate = NSPredicate(format: "id = %d", taskId)
         return realm.objects(Task.self).filter(predicate).first
@@ -44,10 +54,14 @@ class TaskManager: NSObject {
         try! realm.commitWrite()
     }
     
-    func update(task: Task, realm: Realm) {
-        realm.beginWrite()
-        realm.add(task, update: true)
-        try! realm.commitWrite()
+    func update(taskId: Int, title: String, dueDate: Date?, realm: Realm) {
+        if let task = self.getTask(taskId: taskId, realm: realm) {
+            realm.beginWrite()
+            task.title = title
+            task.dueDate = dueDate
+            task.lastUpdatedDate = Date()
+            try! realm.commitWrite()
+        }
     }
     
     func delete(task: Task, realm: Realm) {

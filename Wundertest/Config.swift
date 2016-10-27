@@ -46,39 +46,36 @@ let FONT_MEDIUM_BOLD = UIFont(name: BASE_FONT_NAME_BOLD, size: FONT_SIZE_MEDIUM)
 let FONT_LARGE_BOLD = UIFont(name: BASE_FONT_NAME_BOLD, size: FONT_SIZE_LARGE)
 let FONT_XLARGE_BOLD = UIFont(name: BASE_FONT_NAME_BOLD, size: FONT_SIZE_XLARGE)
 
-let GRAY_COLOUR = "EEEEEE"
-let DARK_GRAY_COLOUR = "757575"
+let DEFAULT_TINT_COLOUR = UIColor(red: 0.0, green: 122.0 / 255.0, blue: 1.0, alpha: 1.0)
 let APP_COLOUR = "202D44"
-let APP_GRAY_COLOUR = UIColor.colour(fromHexString: GRAY_COLOUR)
-let APP_DARK_GRAY_COLOUR = UIColor.colour(fromHexString: DARK_GRAY_COLOUR)
 let TINT_COLOUR = UIColor.colour(fromHexString: APP_COLOUR)
 let NAVIGATION_BAR_COLOUR = UIColor.colour(fromHexString: APP_COLOUR)
 let FONT_COLOUR_BLACK = UIColor.black
 let FONT_COLOUR_WHITE = UIColor.white
 let FONT_COLOUR_LIGHT_GRAY = UIColor.lightGray
 let FONT_COLOUR_DARK_GRAY = UIColor.darkGray
-let FONT_COLOUR_RED = UIColor.red
+let FONT_COLOUR_DEFAULT_TINT = DEFAULT_TINT_COLOUR
 
 let FONT_ATTR_SMALL_WHITE = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
 let FONT_ATTR_SMALL_WHITE_BOLD = [NSFontAttributeName: FONT_SMALL_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
 let FONT_ATTR_SMALL_BLACK = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
 let FONT_ATTR_SMALL_BLACK_BOLD = [NSFontAttributeName: FONT_SMALL_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
-let FONT_ATTR_SMALL_RED = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
+let FONT_ATTR_SMALL_DEFAULT_TINT = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
+let FONT_ATTR_SMALL_DEFAULT_TINT_BOLD = [NSFontAttributeName: FONT_SMALL_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
 
 let FONT_ATTR_MEDIUM_WHITE = [NSFontAttributeName: FONT_MEDIUM!, NSForegroundColorAttributeName:FONT_COLOUR_WHITE]
 let FONT_ATTR_MEDIUM_WHITE_BOLD = [NSFontAttributeName: FONT_MEDIUM_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
 let FONT_ATTR_MEDIUM_BLACK = [NSFontAttributeName: FONT_MEDIUM!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
 let FONT_ATTR_MEDIUM_BLACK_BOLD = [NSFontAttributeName: FONT_MEDIUM_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
+let FONT_ATTR_MEDIUM_DEFAULT_TINT = [NSFontAttributeName: FONT_MEDIUM!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
+let FONT_ATTR_MEDIUM_DEFAULT_TINT_BOLD = [NSFontAttributeName: FONT_MEDIUM_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
 
 let FONT_ATTR_LARGE_WHITE = [NSFontAttributeName: FONT_LARGE!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
 let FONT_ATTR_LARGE_WHITE_BOLD = [NSFontAttributeName: FONT_LARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
 let FONT_ATTR_LARGE_BLACK = [NSFontAttributeName: FONT_LARGE!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
 let FONT_ATTR_LARGE_BLACK_BOLD = [NSFontAttributeName: FONT_LARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
-
-let FONT_ATTR_XLARGE_WHITE = [NSFontAttributeName: FONT_XLARGE!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
-let FONT_ATTR_XLARGE_WHITE_BOLD = [NSFontAttributeName: FONT_XLARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
-let FONT_ATTR_XLARGE_BLACK = [NSFontAttributeName: FONT_XLARGE!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
-let FONT_ATTR_XLARGE_BLACK_BOLD = [NSFontAttributeName: FONT_XLARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
+let FONT_ATTR_LARGE_DEFAULT_TINT = [NSFontAttributeName: FONT_LARGE!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
+let FONT_ATTR_LARGE_DEFAULT_TINT_BOLD = [NSFontAttributeName: FONT_LARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
 
 // MARK: - General Config
 

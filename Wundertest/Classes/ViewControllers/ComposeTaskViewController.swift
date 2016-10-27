@@ -64,13 +64,9 @@ class ComposeTaskViewController: BaseViewController, ComposeTaskViewDelegate {
     func saveAction() {
         self.composeTaskView?.deactivateKeyboard()
         
-        let task = Task()
-        task.id = (self.task?.id)!
-        task.title = self.composeTaskView?.title ?? (self.task?.title)!
-        task.dueDate = self.composeTaskView?.dueDate
-        task.lastUpdatedDate = Date()
-        
-        TaskManager.sharedInstance.update(task: task, realm: RealmManager.sharedInstance.realm)
+        let id = (self.task?.id)!
+        let title = self.composeTaskView?.title ?? (self.task?.title)!
+        TaskManager.sharedInstance.update(taskId: id, title: title, dueDate: self.composeTaskView?.dueDate, realm: RealmManager.sharedInstance.realm)
         let _ = self.navigationController?.popViewController(animated: true)
         self.delegate?.saved()
     }

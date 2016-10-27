@@ -10,6 +10,8 @@
 		00DB5BE7214D2E80558E4371 /* Pods_WundertestTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABA7D626454E405E862CA2CC /* Pods_WundertestTests.framework */; };
 		382F31F31DBFF3D500DBF440 /* DatePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 382F31F21DBFF3D500DBF440 /* DatePickerView.swift */; };
 		3876FE0A1DBF7A880093912E /* ComposeTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3876FE091DBF7A880093912E /* ComposeTaskViewController.swift */; };
+		38ACDE3E1DC239A7002B640E /* DateTimeRemoveButtonStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38ACDE3D1DC239A7002B640E /* DateTimeRemoveButtonStackView.swift */; };
+		38ACDE401DC2498B002B640E /* TaskManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38ACDE3F1DC2498B002B640E /* TaskManagerTests.swift */; };
 		7F043548D4AEE550D3376853 /* Pods_WundertestUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 914FF6E98D0051D3EA712962 /* Pods_WundertestUITests.framework */; };
 		A47BC7E7AC26F89015B2FAD9 /* Pods_Wundertest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 167AC3DF9B646B4EAA157755 /* Pods_Wundertest.framework */; };
 		D705F6561DBE7FF300B93E22 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D705F6551DBE7FF300B93E22 /* AppDelegate.swift */; };
@@ -60,6 +62,8 @@
 		167AC3DF9B646B4EAA157755 /* Pods_Wundertest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Wundertest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		382F31F21DBFF3D500DBF440 /* DatePickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerView.swift; sourceTree = "<group>"; };
 		3876FE091DBF7A880093912E /* ComposeTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposeTaskViewController.swift; sourceTree = "<group>"; };
+		38ACDE3D1DC239A7002B640E /* DateTimeRemoveButtonStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateTimeRemoveButtonStackView.swift; sourceTree = "<group>"; };
+		38ACDE3F1DC2498B002B640E /* TaskManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskManagerTests.swift; sourceTree = "<group>"; };
 		65DEABD912F2EDAF141ECCC6 /* Pods-WundertestUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WundertestUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-WundertestUITests/Pods-WundertestUITests.release.xcconfig"; sourceTree = "<group>"; };
 		6FA15BB3A533FFF8F0022457 /* Pods-WundertestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WundertestTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-WundertestTests/Pods-WundertestTests.release.xcconfig"; sourceTree = "<group>"; };
 		74AEF7BFBA9F092868E407A6 /* Pods-Wundertest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Wundertest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Wundertest/Pods-Wundertest.debug.xcconfig"; sourceTree = "<group>"; };
@@ -187,6 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				D705F66A1DBE7FF400B93E22 /* WundertestTests.swift */,
+				38ACDE3F1DC2498B002B640E /* TaskManagerTests.swift */,
 				D705F66C1DBE7FF400B93E22 /* Info.plist */,
 			);
 			path = WundertestTests;
@@ -289,6 +294,7 @@
 				D76255D01DBE93170089A809 /* PullToAddView.swift */,
 				D76255D21DBE93270089A809 /* PullToAddAnimator.swift */,
 				D76255D61DBEBB750089A809 /* ComposeTaskView.swift */,
+				38ACDE3D1DC239A7002B640E /* DateTimeRemoveButtonStackView.swift */,
 				382F31F21DBFF3D500DBF440 /* DatePickerView.swift */,
 			);
 			path = Views;
@@ -577,6 +583,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				38ACDE3E1DC239A7002B640E /* DateTimeRemoveButtonStackView.swift in Sources */,
 				D705F6561DBE7FF300B93E22 /* AppDelegate.swift in Sources */,
 				D76255B71DBE84F00089A809 /* LoadingView.swift in Sources */,
 				D76255CF1DBE90720089A809 /* TaskSectionHeaderView.swift in Sources */,
@@ -605,6 +612,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				38ACDE401DC2498B002B640E /* TaskManagerTests.swift in Sources */,
 				D705F66B1DBE7FF400B93E22 /* WundertestTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
