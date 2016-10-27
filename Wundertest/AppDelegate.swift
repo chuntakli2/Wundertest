@@ -7,6 +7,7 @@
 //
 
 import UIKit
+//import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,6 +18,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if (ProcessInfo.processInfo.environment["animations"] == "0") {
             UIView.setAnimationsEnabled(false)
         }
+  
+        // TODO: Add Local Notification for task remainder
+//        if #available(iOS 10.0, *) {
+//            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: { (granted, error) in
+//                
+//            })
+//        } else {
+//            // Fallback on earlier versions
+//        }
         
         let navigationBarBackground = UIImage.image(withColour: NAVIGATION_BAR_COLOUR)
         let appearance = UINavigationBar.appearance()
