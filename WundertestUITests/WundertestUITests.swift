@@ -27,9 +27,39 @@ class WundertestUITests: XCTestCase {
         self.app.terminate()
     }
     
-    func testExample() {
-        // Use recording to get started writing UI tests.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testCreateTask() {
+        let toolbar = self.app.toolbars.element(boundBy: 0)
+        let toolbarButtons = toolbar.buttons
+        for index in 0...(toolbarButtons.count - 1) {
+            let button = toolbarButtons.element(boundBy: index)
+            if (button.label == "Add") {
+                button.tap()
+                break
+            }
+        }
+        
+        let textView = self.app.textViews.element(boundBy: 0)
+        textView.typeText("UI Testing")
+        let buttons = self.app.buttons
+        for index in 0...(buttons.count - 1) {
+            let button = buttons.element(boundBy: index)
+            if (button.label == "Save") {
+                button.tap()
+                break
+            }
+        }
+        let tableView = self.app.tables.element(boundBy: 0)
+        let count = tableView.cells.count
+        XCTAssertGreaterThan(count, 0, "Should contain some tasks")
+        let staticTexts = tableView.staticTexts
+        var isFound = false
+        for index in 0...(staticTexts.count - 1) {
+            let staticText = staticTexts.element(boundBy: index)
+            if (staticText.label == "UI Testing") {
+                isFound = true
+                break
+            }
+        }
+        XCTAssertTrue(isFound, "Found new created task")
     }
-    
 }
