@@ -40,6 +40,7 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
                 self.title = task.title
                 self.textView?.text = task.title
                 self.dueDate = task.dueDate
+                self.reminder = task.reminder
 
                 self.titleLabel?.isHidden = true
                 self.buttonsStackView?.isHidden = true
@@ -61,12 +62,6 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
                 let dateString = String(format: "%d - %d - %d", day, month, year)
                 self.dateButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: dateString, attributes: attributes), for: .normal)
                 self.dateButton?.showRemoveButton()
-                
-                let hour = calendar.component(.hour, from: date)
-                let minute = calendar.component(.minute, from: date)
-                
-                let timeString = String(format: "%d : %d", hour, minute)
-                self.timeButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: timeString, attributes: attributes), for: .normal)
             } else {
                 var attributes: [String: Any] = FONT_ATTR_MEDIUM_DEFAULT_TINT
                 attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
@@ -75,6 +70,30 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
             }
         }
     }
+    var reminder: Date? {
+        didSet {
+            if let date = self.reminder {
+                let calendar = Calendar.current
+                let year = calendar.component(.year, from: date)
+                let month = calendar.component(.month, from: date)
+                let day = calendar.component(.day, from: date)
+                let hour = calendar.component(.hour, from: date)
+                let minute = calendar.component(.minute, from: date)
+                
+                var attributes: [String: Any] = FONT_ATTR_MEDIUM_DEFAULT_TINT
+                attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+                let timeString = String(format: "%d - %d - %d %d : %d", day, month, year, hour, minute)
+                self.timeButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: timeString, attributes: attributes), for: .normal)
+                self.timeButton?.showRemoveButton()
+            } else {
+                var attributes: [String: Any] = FONT_ATTR_MEDIUM_DEFAULT_TINT
+                attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+                self.timeButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: NSLocalizedString("addReminder.title", comment: ""), attributes: attributes), for: .normal)
+                self.timeButton?.hideRemoveButton()
+            }
+        }
+    }
+    private var dateTimeType: DateTimeType = .date
 
     private var hasLoadedConstraints = false
 
@@ -119,12 +138,15 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
     // MARK: - Implementation of DateTimeRemoveButtonStackViewDelegate Protocols
     
     func dateTimeButtonPressed(type: DateTimeType) {
+        self.dateTimeType = type
         self.showDatePickerView(isDateMode: (type == .date))
     }
     
     func removeButtonPressed(type: DateTimeType) {
         if (type == .date) {
             self.dueDate = nil
+        } else {
+            self.reminder = nil
         }
     }
     
@@ -149,15 +171,15 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
     // MARK: - Implementation of DatePickerViewDelegate Protocols
     
     func changed(date: Date) {
-        self.dueDate = date
+        self.updateDueDateOrReminder(date: date)
     }
     
     func done(date: Date) {
-        self.dueDate = date
+        self.updateDueDateOrReminder(date: date)
     }
     
     func cancel(date: Date?) {
-        self.dueDate = date
+        self.updateDueDateOrReminder(date: date)
     }
     
     // MARK: - Events
@@ -181,6 +203,7 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
                 let task = Task()
                 task.title = title
                 task.dueDate = self.dueDate
+                task.reminder = self.reminder
                 self.delegate?.compose(task: task)
             }
         }
@@ -210,10 +233,18 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
     private func showDatePickerView(isDateMode: Bool) {
         self.textView?.resignFirstResponder()
         
-        self.datePickerView.title = (isDateMode ? NSLocalizedString("dueDate.title", comment: "") : NSLocalizedString("time.title", comment: ""))
+        self.datePickerView.title = (isDateMode ? NSLocalizedString("dueDate.title", comment: "") : NSLocalizedString("reminder.title", comment: ""))
         self.datePickerView.date = self.dueDate
         self.datePickerView.mode = (isDateMode ? .date : .dateAndTime)
         self.datePickerView.show()
+    }
+    
+    private func updateDueDateOrReminder(date: Date?) {
+        if (self.dateTimeType == .date) {
+            self.dueDate = date
+        } else {
+            self.reminder = date
+        }
     }
     
     private func dismiss(callback: @escaping (Bool) -> Void) {
@@ -282,16 +313,14 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
         self.dateButton = DateTimeRemoveButtonStackView()
         self.dateButton?.delegate = self
         self.dateButton?.dateTimeType = .date
-        var attributes: [String: Any] = FONT_ATTR_MEDIUM_DEFAULT_TINT
-        attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
-        self.dateButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: NSLocalizedString("addDueDate.title", comment: ""), attributes: attributes), for: .normal)
+        self.dueDate = nil
     }
     
     private func setupTimeButton() {
         self.timeButton = DateTimeRemoveButtonStackView()
         self.timeButton?.delegate = self
         self.timeButton?.dateTimeType = .time
-        self.timeButton?.isHidden = true
+        self.reminder = nil
     }
     
     private func setupButtonsStackView() {

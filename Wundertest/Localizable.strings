@@ -18,5 +18,6 @@
 "showCompleted.title" = "Show Completed";
 "pullToAdd.message" = "Pull to add new task";
 "dueDate.title" = "Due Date";
-"time.title" = "Time";
+"reminder.title" = "Reminder";
 "addDueDate.title" = "Add due date";
+"addReminder.title" = "Add reminder";

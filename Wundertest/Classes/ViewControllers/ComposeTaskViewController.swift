@@ -66,9 +66,9 @@ class ComposeTaskViewController: BaseViewController, ComposeTaskViewDelegate {
         
         let id = (self.task?.id)!
         let title = self.composeTaskView?.title ?? (self.task?.title)!
-        TaskManager.sharedInstance.update(taskId: id, title: title, dueDate: self.composeTaskView?.dueDate, realm: RealmManager.sharedInstance.realm)
+        TaskManager.sharedInstance.update(taskId: id, title: title, dueDate: self.composeTaskView?.dueDate, reminder: self.composeTaskView?.reminder, realm: RealmManager.sharedInstance.realm)
         let _ = self.navigationController?.popViewController(animated: true)
-        self.delegate?.saved()
+        self.delegate?.saved()        
     }
     
     // MARK: - Subviews

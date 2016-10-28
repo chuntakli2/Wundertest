@@ -13,7 +13,7 @@ class Task: Object {
     dynamic var id: Int = GKRandomSource.sharedRandom().nextInt()
     dynamic var title: String = ""
     dynamic var dueDate: Date?
-    dynamic var remainder: Date?
+    dynamic var reminder: Date?
     dynamic var order: Int = 0
     dynamic var orderTimestamp: Int = Date.getCurrentTimestampInMilliseconds()
     dynamic var isCompleted: Bool = false

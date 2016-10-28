@@ -12,10 +12,11 @@ import RealmSwift
 
 class TaskViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, TaskSectionHeaderViewDelegate, TaskCellDelegate, ComposeTaskViewControllerDelegate {
 
-    private var noTaskLabel: UILabel?
     private var tableView: UITableView?
+    private var toolBar: UIToolbar?
     private var pullToAddView: PullToAddView?
     private var pullToAddControl: PullToRefresh?
+    private var noTaskLabel: UILabel?
 
     private var tasks: Results<Task> {
         get {
@@ -204,6 +205,18 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.tableView?.alwaysBounceVertical = !(self.tableView?.isEditing)!
     }
     
+    func shareButtonAction() {
+        
+    }
+    
+    func sortButtonAction() {
+        
+    }
+    
+    func addButtonAction() {
+        
+    }
+    
     // MARK: - Public Methods
     
     override func setup() {
@@ -273,11 +286,11 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     
     private func setupTableView() {
         self.tableView = UITableView(frame: CGRect.zero, style: .plain)
-        self.tableView?.backgroundColor = .clear
+        self.tableView?.backgroundColor = .white
         self.tableView?.dataSource = self
         self.tableView?.delegate = self
         self.tableView?.tableHeaderView = UIView()
-        self.tableView?.tableFooterView = UIView()
+        self.tableView?.tableFooterView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 0.0, height: GENERAL_ITEM_HEIGHT))
         self.tableView?.rowHeight = GENERAL_CELL_HEIGHT
         self.tableView?.separatorStyle = .singleLine
         
@@ -293,8 +306,21 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         })
     }
     
+    private func setupToolBar() {
+        self.toolBar = UIToolbar()
+        self.toolBar?.tintColor = .white
+        self.toolBar?.barStyle = .black
+        
+        let shareItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: .shareButtonAction)
+        let sortItem = UIBarButtonItem(image: UIImage(named: "sort"), style: .plain, target: self, action: .sortButtonAction)
+        let addItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: .addButtonAction)
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        self.toolBar?.items = [shareItem, flexibleSpace, sortItem, flexibleSpace, addItem]
+    }
+    
     private func setupNoTaskLabel() {
         self.noTaskLabel = UILabel()
+        self.noTaskLabel?.backgroundColor = .white
         self.noTaskLabel?.numberOfLines = 1
         self.noTaskLabel?.textAlignment = .center
         self.noTaskLabel?.attributedText = NSAttributedString(string: NSLocalizedString("pullToAdd.message", comment: ""), attributes: FONT_ATTR_LARGE_BLACK)
@@ -308,6 +334,10 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.tableView?.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.tableView!)
         
+        self.setupToolBar()
+        self.toolBar?.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.toolBar!)
+        
         self.setupNoTaskLabel()
         self.noTaskLabel?.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.noTaskLabel!)
@@ -316,19 +346,22 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     override func updateViewConstraints() {
         if (!self.hasLoadedConstraints) {
             let views: [String: Any] = ["table": self.tableView!,
+                                        "bar": self.toolBar!,
                                         "noTask": self.noTaskLabel!]
             
-            let metrics = ["WIDTH": GENERAL_ITEM_WIDTH,
-                           "HEIGHT": GENERAL_ITEM_HEIGHT,
-                           "SMALL_SPACING": SMALL_SPACING]
+            let metrics = ["HEIGHT": GENERAL_ITEM_HEIGHT]
 
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[table]|", options: .directionMask, metrics: nil, views: views))
-            
+
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[bar]|", options: .directionMask, metrics: nil, views: views))
+
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[noTask]|", options: .directionMask, metrics: nil, views: views))
             
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[table]|", options: .directionMask, metrics: metrics, views: views))
-            
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[noTask]|", options: .directionMask, metrics: metrics, views: views))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[table]|", options: .directionMask, metrics: nil, views: views))
+
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bar(HEIGHT)]|", options: .directionMask, metrics: metrics, views: views))
+
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[noTask]|", options: .directionMask, metrics: nil, views: views))
             
             self.hasLoadedConstraints = true
         }
@@ -366,4 +399,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
 
 private extension Selector {
     static let rightBarButtonAction = #selector(TaskViewController.rightBarButtonAction)
+    static let shareButtonAction = #selector(TaskViewController.shareButtonAction)
+    static let sortButtonAction = #selector(TaskViewController.sortButtonAction)
+    static let addButtonAction = #selector(TaskViewController.addButtonAction)
 }

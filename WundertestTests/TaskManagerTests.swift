@@ -6,6 +6,7 @@
 //  Copyright © 2016 Chun Tak Li. All rights reserved.
 //
 
+import UserNotifications
 import XCTest
 import RealmSwift
 @testable import Wundertest
@@ -16,6 +17,7 @@ class TaskManagerTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        
         var config = Realm.Configuration.defaultConfiguration
         config.inMemoryIdentifier = self.name
         try! realm = Realm.init(configuration: config)
@@ -24,6 +26,13 @@ class TaskManagerTests: XCTestCase {
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
+        
+        // Remove all local notifications created during UnitTest
+        if #available(iOS 10.0, *) {
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        } else {
+            UIApplication.shared.cancelAllLocalNotifications()
+        }
     }
     
     func testGetTasks() {
@@ -82,12 +91,14 @@ class TaskManagerTests: XCTestCase {
         let newCreatedTask = tasks.first
         let newTitle = "Testing Title"
         let newDueDate = Date()
-        TaskManager.sharedInstance.update(taskId: newCreatedTask!.id, title: newTitle, dueDate: newDueDate, realm: self.realm)
+        let newReminder = Date()
+        TaskManager.sharedInstance.update(taskId: newCreatedTask!.id, title: newTitle, dueDate: newDueDate, reminder: newReminder, realm: self.realm)
         let updatedTasks = TaskManager.sharedInstance.getTasksFrom(realm: self.realm) // Should return a new updated task from database
         XCTAssertEqual(TaskManager.sharedInstance.getTasksFrom(realm: self.realm).count, 1, "Should return only ONE task from database")
         let updatedTask = updatedTasks.first
         XCTAssertEqual(updatedTask?.title, newTitle, "Should be same title")
         XCTAssertEqual(updatedTask?.dueDate, newDueDate, "Should be same due date")
+        XCTAssertEqual(updatedTask?.reminder, newReminder, "Should be same reminder")
     }
 
     func testUpdateTaskOrder() {
