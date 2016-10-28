@@ -21,3 +21,11 @@
 "reminder.title" = "Reminder";
 "addDueDate.title" = "Add due date";
 "addReminder.title" = "Add reminder";
+"sort.title" = "Sorted by";
+"sortByCD.title" = "Create date";
+"sortByAO.title" = "Alphabetical order";
+"export.title" = "Export as CSV";
+"exportByCD.title" = "By create date";
+"exportByAO.title" = "By alphabetical order";
+"sent.message" = "CSV file sent success";
+"failed.message" = "CSV file sent failed.";

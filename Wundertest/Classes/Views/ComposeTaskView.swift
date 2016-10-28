@@ -59,7 +59,7 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
                 
                 var attributes: [String: Any] = FONT_ATTR_MEDIUM_DEFAULT_TINT
                 attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
-                let dateString = String(format: "%d - %d - %d", day, month, year)
+                let dateString = String(format: "%d-%d-%d", day, month, year)
                 self.dateButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: dateString, attributes: attributes), for: .normal)
                 self.dateButton?.showRemoveButton()
             } else {
@@ -82,7 +82,7 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
                 
                 var attributes: [String: Any] = FONT_ATTR_MEDIUM_DEFAULT_TINT
                 attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
-                let timeString = String(format: "%d - %d - %d %d : %d", day, month, year, hour, minute)
+                let timeString = String(format: "%d-%d-%d %d : %d", day, month, year, hour, minute)
                 self.timeButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: timeString, attributes: attributes), for: .normal)
                 self.timeButton?.showRemoveButton()
             } else {

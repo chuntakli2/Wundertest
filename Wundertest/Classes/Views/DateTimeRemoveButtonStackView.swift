@@ -8,11 +8,6 @@
 
 import UIKit
 
-enum DateTimeType {
-    case date
-    case time
-}
-
 protocol DateTimeRemoveButtonStackViewDelegate: class {
     func dateTimeButtonPressed(type: DateTimeType)
     func removeButtonPressed(type: DateTimeType)

@@ -8,6 +8,37 @@
 
 import UIKit
 
+func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l < r
+    case (nil, _?):
+        return true
+    default:
+        return false
+    }
+}
+
+func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l > r
+    default:
+        return rhs < lhs
+    }
+}
+
+enum SortType {
+    case order
+    case createdDate
+    case alphabeticalOrder
+}
+
+enum DateTimeType {
+    case date
+    case time
+}
+
 // Get AppDelegate
 let APP_DELEGATE = UIApplication.shared.delegate as! AppDelegate
 
@@ -22,6 +53,7 @@ let IOS_VERSION = (UIDevice.current.systemVersion as NSString).floatValue
 let IPHONE_PLUS_WIDTH: CGFloat = 414.0
 let IPHONE_PLUS_HEIGHT: CGFloat = 736.0
 let IS_IPHONE_PLUS = (UIScreen.main.bounds.width * UIScreen.main.bounds.height == IPHONE_PLUS_WIDTH * IPHONE_PLUS_HEIGHT)
+let IS_IPAD = (UIDevice.current.userInterfaceIdiom == .pad)
 
 // MARK: - Font start
 
@@ -100,16 +132,6 @@ let ANIMATION_DURATION = 0.3
 
 let WHITESPACE = " "
 
-// MARK: - Keys
-
-let SETTINGS_KEY = "Settingsv1.0.0_Key"
-let DEVICE_TOKEN_KEY = "DeviceToken_Key"
-let IOS_VERSION_KEY = "iOSVersion_Key"
-let IS_JAILBROKEN_KEY = "IsJailbroken_Key"
-let DEVICE_LANGUAGE_KEY = "DeviceLanguage_Key"
-let IS_TUTORIAL_MODE_KEY = "IsTutorialMode_Key"
-let IS_NEWLY_INSTALLED_KEY = "IsNewlyInstalled_Key"
-let PHOTOS_COUNT_KEY = "PhotosCount_Key"
-let LAST_PHOTO_UNIQUE_ID_KEY = "LastPhotoUniqueId_Key"
-
-// MARK: - Errors
+let kCSVSeparator = ";"
+let kCSVQuoteCharacter = "\""
+let kCSVLineEnd = "\n"

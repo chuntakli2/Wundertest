@@ -29,19 +29,28 @@ class TaskManager: NSObject {
     
     // MARK: - Public Methods
     
-    func getTasksFrom(realm: Realm) -> Results<Task> {
+    func getTasks(from realm: Realm) -> Results<Task> {
         let tasks = realm.objects(Task.self).sorted(byProperty: "order", ascending: true)
         return tasks
     }
     
-    func getIncompletedTasksFrom(realm: Realm) -> Results<Task> {
+    func getIncompletedTasks(sortBy type: SortType = .order, from realm: Realm) -> Results<Task> {
         let predicate = NSPredicate(format: "isCompleted == false")
-        return self.getTasksFrom(realm: realm).filter(predicate)
+        var key = "order"
+        switch type {
+        case .order:
+            key = "order"
+        case .createdDate:
+            key = "creationDate"
+        case .alphabeticalOrder:
+            key = "title"
+        }
+        return self.getTasks(from: realm).filter(predicate).sorted(byProperty: key, ascending: (type != .createdDate))
     }
     
-    func getCompletedTasksFrom(realm: Realm) -> Results<Task> {
+    func getCompletedTasks(from realm: Realm) -> Results<Task> {
         let predicate = NSPredicate(format: "isCompleted == true")
-        return self.getTasksFrom(realm: realm).filter(predicate)
+        return self.getTasks(from: realm).filter(predicate)
     }
     
     func getTask(taskId: Int, realm: Realm) -> Task? {
@@ -93,6 +102,40 @@ class TaskManager: NSObject {
         realm.beginWrite()
         realm.delete(task)
         try! realm.commitWrite()
+    }
+    
+    func exportTasksToCSV(sortBy type: SortType = .alphabeticalOrder, realm: Realm) -> URL {
+        var tasksData = "\"Task ID\";\"Task Title\";\"Due Date\";\"State\";\"Creation Date\"\n"
+        let taskFormat = "\"%d\";\"%@\";\"%@\";\"%@\";\"%@\"\n"
+        for incompletedTask in self.getIncompletedTasks(sortBy: type, from: realm) {
+            let id = incompletedTask.id
+            let title = incompletedTask.title
+            let dueDate = self.generateDateString(from: incompletedTask.dueDate)
+            let state = "Incomplete"
+            let creationDate = self.generateDateString(from: incompletedTask.creationDate)
+            let taskData = String(format: taskFormat, id, title, dueDate, state, creationDate)
+            tasksData.append(taskData)
+        }
+        for completedTask in self.getCompletedTasks(from: realm) {
+            let id = completedTask.id
+            let title = completedTask.title
+            let dueDate = self.generateDateString(from: completedTask.dueDate)
+            let state = "Completed"
+            let creationDate = self.generateDateString(from: completedTask.creationDate)
+            let taskData = String(format: taskFormat, id, title, dueDate, state, creationDate)
+            tasksData.append(taskData)
+        }
+        
+        let fileManager = FileManager.default
+        let cachesDirectoryURL = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let tasksDirectoryURL = cachesDirectoryURL.appendingPathComponent("Tasks")
+        try! fileManager.createDirectory(at: tasksDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+        let fileName = String(format: "Exported_by_%@_%@.csv", ((type == .createdDate) ? "creation_date" : "alphabetical_order"), self.generateDateString(from: Date()))
+        let tasksCSVFileName = fileName
+        let tasksCSVFileURL = tasksDirectoryURL.appendingPathComponent(tasksCSVFileName)
+        try! tasksData.write(toFile: tasksCSVFileURL.path, atomically: true, encoding: .utf8)
+        
+        return tasksCSVFileURL
     }
     
     // MARK: Private Methods
@@ -151,5 +194,16 @@ class TaskManager: NSObject {
                 UIApplication.shared.scheduleLocalNotification(notification)
             }
         }
+    }
+    
+    private func generateDateString(from date: Date?) -> String {
+        if let date = date {
+            let calendar = Calendar.current
+            let year = calendar.component(.year, from: date)
+            let month = calendar.component(.month, from: date)
+            let day = calendar.component(.day, from: date)
+            return String(format: "%d-%d-%d", day, month, year)
+        }
+        return ""
     }
 }
