@@ -13,7 +13,7 @@ Plus some additional features:
 - Swipe down / Pull to add task
 - Add Due Date & Reminder
 - Sort tasks (by create date / alphabetical order)
-- Export tasks as CSV file with sorting
+- Generate tasks as CSV file with sorting and export by Email
 - Universal binary
-- Unit & UI tests
-- Custom views
+- Unit tests for TaskManager Class
+- UI test for create new task
