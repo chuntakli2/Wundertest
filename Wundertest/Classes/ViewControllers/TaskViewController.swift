@@ -388,7 +388,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     
     private func setupNoTaskLabel() {
         self.noTaskLabel = UILabel()
-        self.noTaskLabel?.backgroundColor = .white
+        self.noTaskLabel?.backgroundColor = .clear
         self.noTaskLabel?.numberOfLines = 1
         self.noTaskLabel?.textAlignment = .center
         self.noTaskLabel?.attributedText = NSAttributedString(string: NSLocalizedString("pullToAdd.message", comment: ""), attributes: FONT_ATTR_LARGE_BLACK)
