@@ -83,6 +83,8 @@ class DateTimeRemoveButtonStackView: UIStackView {
         self.dateTimeButton?.addTarget(self, action: .dateTimeButtonAction, for: .touchUpInside)
         self.dateTimeButton?.contentHorizontalAlignment = .left
         self.dateTimeButton?.titleEdgeInsets = UIEdgeInsetsMake(0.0, GENERAL_SPACING, 0.0, GENERAL_SPACING)
+        self.dateTimeButton?.titleLabel?.numberOfLines = 0
+        self.dateTimeButton?.titleLabel?.textAlignment = .right
     }
     
     private func setupRemoveButton() {

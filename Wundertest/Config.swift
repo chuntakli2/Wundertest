@@ -86,12 +86,15 @@ let FONT_COLOUR_BLACK = UIColor.black
 let FONT_COLOUR_WHITE = UIColor.white
 let FONT_COLOUR_LIGHT_GRAY = UIColor.lightGray
 let FONT_COLOUR_DARK_GRAY = UIColor.darkGray
+let FONT_COLOUR_RED = UIColor.red
 let FONT_COLOUR_DEFAULT_TINT = DEFAULT_TINT_COLOUR
 
 let FONT_ATTR_SMALL_WHITE = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
 let FONT_ATTR_SMALL_WHITE_BOLD = [NSFontAttributeName: FONT_SMALL_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
 let FONT_ATTR_SMALL_BLACK = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
 let FONT_ATTR_SMALL_BLACK_BOLD = [NSFontAttributeName: FONT_SMALL_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
+let FONT_ATTR_SMALL_RED = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
+let FONT_ATTR_SMALL_RED_BOLD = [NSFontAttributeName: FONT_SMALL_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
 let FONT_ATTR_SMALL_DEFAULT_TINT = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
 let FONT_ATTR_SMALL_DEFAULT_TINT_BOLD = [NSFontAttributeName: FONT_SMALL_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
 
@@ -99,6 +102,8 @@ let FONT_ATTR_MEDIUM_WHITE = [NSFontAttributeName: FONT_MEDIUM!, NSForegroundCol
 let FONT_ATTR_MEDIUM_WHITE_BOLD = [NSFontAttributeName: FONT_MEDIUM_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
 let FONT_ATTR_MEDIUM_BLACK = [NSFontAttributeName: FONT_MEDIUM!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
 let FONT_ATTR_MEDIUM_BLACK_BOLD = [NSFontAttributeName: FONT_MEDIUM_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
+let FONT_ATTR_MEDIUM_RED = [NSFontAttributeName: FONT_MEDIUM!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
+let FONT_ATTR_MEDIUM_RED_BOLD = [NSFontAttributeName: FONT_MEDIUM_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
 let FONT_ATTR_MEDIUM_DEFAULT_TINT = [NSFontAttributeName: FONT_MEDIUM!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
 let FONT_ATTR_MEDIUM_DEFAULT_TINT_BOLD = [NSFontAttributeName: FONT_MEDIUM_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
 
@@ -106,6 +111,8 @@ let FONT_ATTR_LARGE_WHITE = [NSFontAttributeName: FONT_LARGE!, NSForegroundColor
 let FONT_ATTR_LARGE_WHITE_BOLD = [NSFontAttributeName: FONT_LARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
 let FONT_ATTR_LARGE_BLACK = [NSFontAttributeName: FONT_LARGE!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
 let FONT_ATTR_LARGE_BLACK_BOLD = [NSFontAttributeName: FONT_LARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
+let FONT_ATTR_LARGE_RED = [NSFontAttributeName: FONT_LARGE!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
+let FONT_ATTR_LARGE_RED_BOLD = [NSFontAttributeName: FONT_LARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
 let FONT_ATTR_LARGE_DEFAULT_TINT = [NSFontAttributeName: FONT_LARGE!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
 let FONT_ATTR_LARGE_DEFAULT_TINT_BOLD = [NSFontAttributeName: FONT_LARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
 

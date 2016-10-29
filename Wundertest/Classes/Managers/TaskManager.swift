@@ -85,6 +85,12 @@ class TaskManager: NSObject {
             task.order = order
             task.orderTimestamp = Date.getCurrentTimestampInMilliseconds()
             try! realm.commitWrite()
+            
+            if (isCompleted) {
+                self.removeLocalNotification(with: task)
+            } else {
+                self.createLocalNotification(with: task)
+            }
         }
     }
     
@@ -157,8 +163,9 @@ class TaskManager: NSObject {
     
     private func createLocalNotification(with task: Task) {
         self.removeLocalNotification(with: task)
-        if #available(iOS 10.0, *) {
-            if let reminder = task.reminder {
+        if let reminder = task.reminder {
+            guard (reminder.timeIntervalSince1970 >= Date().timeIntervalSince1970) else { return }
+            if #available(iOS 10.0, *) {
                 let calendar = Calendar.current
                 let year = calendar.component(.year, from: reminder)
                 let month = calendar.component(.month, from: reminder)
@@ -169,7 +176,7 @@ class TaskManager: NSObject {
                 let content = UNMutableNotificationContent()
                 content.title = NSLocalizedString("reminder.title", comment: "")
                 content.body = String(format: "Time to finish your task: %@", task.title)
-
+                
                 var dateComponents = DateComponents()
                 dateComponents.year = year
                 dateComponents.month = month
@@ -181,9 +188,7 @@ class TaskManager: NSObject {
                 
                 let request = UNNotificationRequest(identifier: String(format: "%d", task.id), content: content, trigger: trigger)
                 UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
-            }
-        } else {
-            if let reminder = task.reminder {
+            } else {
                 let notification = UILocalNotification()
                 notification.alertTitle = NSLocalizedString("reminder.title", comment: "")
                 notification.alertBody = String(format: "Time to finish your task: %@", task.title)

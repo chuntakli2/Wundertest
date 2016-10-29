@@ -100,11 +100,18 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         if (indexPath.section == 0) {
             if let date = task.dueDate {
                 let calendar = Calendar.current
+
+                let todayYear = calendar.component(.year, from: Date())
+                let todayMonth = calendar.component(.month, from: Date())
+                let todayDay = calendar.component(.day, from: Date())
+
                 let year = calendar.component(.year, from: date)
                 let month = calendar.component(.month, from: date)
                 let day = calendar.component(.day, from: date)
+                
+                let attributes: [String: Any] = ((todayYear >= year && todayMonth >= month && todayDay > day) ? FONT_ATTR_SMALL_RED : FONT_ATTR_SMALL_DEFAULT_TINT)
                 let date = String(format: "%d-%d-%d", day, month, year)
-                cell.dueDateLabel?.attributedText = NSAttributedString(string: date, attributes: FONT_ATTR_SMALL_DEFAULT_TINT)
+                cell.dueDateLabel?.attributedText = NSAttributedString(string: date, attributes: attributes)
             }
         }
         cell.checkBoxImageView?.image = ((task.isCompleted) ? UIImage(named: "tick_white") : nil)

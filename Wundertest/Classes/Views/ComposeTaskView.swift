@@ -53,11 +53,16 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
         didSet {
             if let date = self.dueDate {
                 let calendar = Calendar.current
+                
+                let todayYear = calendar.component(.year, from: Date())
+                let todayMonth = calendar.component(.month, from: Date())
+                let todayDay = calendar.component(.day, from: Date())
+                
                 let year = calendar.component(.year, from: date)
                 let month = calendar.component(.month, from: date)
                 let day = calendar.component(.day, from: date)
                 
-                var attributes: [String: Any] = FONT_ATTR_MEDIUM_DEFAULT_TINT
+                var attributes: [String: Any] = ((todayYear >= year && todayMonth >= month && todayDay > day) ? FONT_ATTR_MEDIUM_RED : FONT_ATTR_MEDIUM_DEFAULT_TINT)
                 attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
                 let dateString = String(format: "%d-%d-%d", day, month, year)
                 self.dateButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: dateString, attributes: attributes), for: .normal)
@@ -74,15 +79,27 @@ class ComposeTaskView: UIView, UITextViewDelegate, DateTimeRemoveButtonStackView
         didSet {
             if let date = self.reminder {
                 let calendar = Calendar.current
+                
+                let todayYear = calendar.component(.year, from: Date())
+                let todayMonth = calendar.component(.month, from: Date())
+                let todayDay = calendar.component(.day, from: Date())
+                let todayHour = calendar.component(.hour, from: Date())
+                let todayMinute = calendar.component(.minute, from: Date())
+                
                 let year = calendar.component(.year, from: date)
                 let month = calendar.component(.month, from: date)
                 let day = calendar.component(.day, from: date)
                 let hour = calendar.component(.hour, from: date)
                 let minute = calendar.component(.minute, from: date)
                 
-                var attributes: [String: Any] = FONT_ATTR_MEDIUM_DEFAULT_TINT
+                var attributes: [String: Any] = ((todayYear >= year && todayMonth >= month && todayDay >= day && todayHour >= hour && todayMinute > minute) ? FONT_ATTR_MEDIUM_RED : FONT_ATTR_MEDIUM_DEFAULT_TINT)
                 attributes[NSUnderlineStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
-                let timeString = String(format: "%d-%d-%d %d : %d", day, month, year, hour, minute)
+                if let task = self.task {
+                    if (task.isCompleted) {
+                        attributes[NSStrikethroughStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+                    }
+                }
+                let timeString = String(format: "%d-%d-%d\n%d:%d", day, month, year, hour, minute)
                 self.timeButton?.dateTimeButton?.setAttributedTitle(NSAttributedString(string: timeString, attributes: attributes), for: .normal)
                 self.timeButton?.showRemoveButton()
             } else {
