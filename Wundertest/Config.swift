@@ -50,6 +50,10 @@ let kCacheDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .use
 
 let IOS_VERSION = (UIDevice.current.systemVersion as NSString).floatValue
 
+let IPHONE_X_WIDTH: CGFloat = 375.0
+let IPHONE_X_HEIGHT: CGFloat = 812.0
+let IS_IPHONE_X = (UIScreen.main.bounds.width * UIScreen.main.bounds.height == IPHONE_X_WIDTH * IPHONE_X_HEIGHT)
+
 let IPHONE_PLUS_WIDTH: CGFloat = 414.0
 let IPHONE_PLUS_HEIGHT: CGFloat = 736.0
 let IS_IPHONE_PLUS = (UIScreen.main.bounds.width * UIScreen.main.bounds.height == IPHONE_PLUS_WIDTH * IPHONE_PLUS_HEIGHT)
@@ -136,6 +140,7 @@ let CORNER_RADIUS: CGFloat = 10.0
 let PULL_TO_ADD_VIEW_HEIGHT: CGFloat = 60.0
 let COMPOSE_TASK_VIEW_WIDTH: CGFloat = 280.0
 let TEXT_VIEW_HEIGHT: CGFloat = 64.0
+let TOOL_BAR_HEIGHT: CGFloat = 44.0
 
 let ANIMATION_DURATION = 0.3
 

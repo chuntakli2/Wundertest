@@ -21,6 +21,8 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     private var addButton = UIBarButtonItem(barButtonSystemItem: .add, target: nil, action: nil)
     private var pullToAddView: PullToAddView?
     private var pullToAddControl: PullToRefresh?
+    
+    private var toolBarHeightConstraint = NSLayoutConstraint()
 
     private var tasks: Results<Task> {
         get {
@@ -376,7 +378,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.tableView.dataSource = self
         self.tableView.delegate = self
         self.tableView.tableHeaderView = UIView()
-        self.tableView.tableFooterView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 0.0, height: GENERAL_ITEM_HEIGHT))
+        self.tableView.tableFooterView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 0.0, height: TOOL_BAR_HEIGHT))
         self.tableView.rowHeight = GENERAL_CELL_HEIGHT
         self.tableView.separatorStyle = .singleLine
         
@@ -436,8 +438,6 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
                                         "noTask": self.noTaskLabel,
                                         "bar": self.toolBar]
             
-            let metrics = ["HEIGHT": GENERAL_ITEM_HEIGHT]
-
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[table]|", options: .directionMask, metrics: nil, views: views))
 
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[noTask]|", options: .directionMask, metrics: nil, views: views))
@@ -448,10 +448,22 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
 
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[noTask]|", options: .directionMask, metrics: nil, views: views))
 
-            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bar(HEIGHT)]|", options: .directionMask, metrics: metrics, views: views))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bar]|", options: .directionMask, metrics: nil, views: views))
             
+            self.toolBarHeightConstraint = NSLayoutConstraint(item: self.toolBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: TOOL_BAR_HEIGHT)
+            self.view.addConstraint(self.toolBarHeightConstraint)
+
             self.hasLoadedConstraints = true
         }
+        if #available(iOS 11.0, *) {
+            let bottomPadding = self.view.safeAreaInsets.bottom
+            self.tableView.tableFooterView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 0.0, height: bottomPadding + TOOL_BAR_HEIGHT))
+            self.toolBarHeightConstraint.constant = bottomPadding + TOOL_BAR_HEIGHT
+        } else {
+            self.tableView.tableFooterView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 0.0, height: TOOL_BAR_HEIGHT))
+            self.toolBarHeightConstraint.constant = TOOL_BAR_HEIGHT
+        }
+
         super.updateViewConstraints()
     }
     
@@ -459,6 +471,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         super.viewDidLayoutSubviews()
         
         self.pullToAddView?.layoutSubviews()
+        self.updateViewConstraints()
     }
     
     // MARK: - View lifecycle
