@@ -17,8 +17,8 @@ class TaskSectionHeaderView: UITableViewHeaderFooterView {
     weak var delegate: TaskSectionHeaderViewDelegate?
     var section = 0
     
-    var titleLabel: UILabel?
-    var toggleButton: UIButton?
+    var titleLabel = UILabel()
+    var toggleButton = UIButton(type: .system)
     
     private var isExpanded = false
 
@@ -44,11 +44,11 @@ class TaskSectionHeaderView: UITableViewHeaderFooterView {
     
     // MARK: - Events
     
-    func toggleButtonAction() {
+    @objc func toggleButtonAction() {
         self.isExpanded = !self.isExpanded
         let headerTitle = (self.isExpanded ? "Hide Completed" : "Show Completed")
         UIView.animate(withDuration: ANIMATION_DURATION, animations: {
-            self.titleLabel?.attributedText = NSAttributedString(string: headerTitle, attributes: FONT_ATTR_MEDIUM_BLACK)
+            self.titleLabel.attributedText = NSAttributedString(string: headerTitle, attributes: FONT_ATTR_MEDIUM_BLACK)
         })
         self.delegate?.toggleClicked(section: self.section)
     }
@@ -64,30 +64,28 @@ class TaskSectionHeaderView: UITableViewHeaderFooterView {
     // MARK: - Subviews
     
     private func setupTitleLabel() {
-        self.titleLabel = UILabel()
-        self.titleLabel?.numberOfLines = 1
-        self.titleLabel?.textAlignment = .center
+        self.titleLabel.numberOfLines = 1
+        self.titleLabel.textAlignment = .center
     }
     
     private func setupToggleButton() {
-        self.toggleButton = UIButton(type: .system)
-        self.toggleButton?.addTarget(self, action: .toggleButtonAction, for: .touchUpInside)
+        self.toggleButton.addTarget(self, action: .toggleButtonAction, for: .touchUpInside)
     }
     
     private func setupSubviews() {
         self.setupTitleLabel()
-        self.titleLabel?.translatesAutoresizingMaskIntoConstraints = false
-        self.contentView.addSubview(self.titleLabel!)
+        self.titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(self.titleLabel)
         
         self.setupToggleButton()
-        self.toggleButton?.translatesAutoresizingMaskIntoConstraints = false
-        self.contentView.addSubview(self.toggleButton!)
+        self.toggleButton.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(self.toggleButton)
     }
     
     override func updateConstraints() {
         if (!self.hasLoadedConstraints) {
-            let views: [String: Any] = ["title": self.titleLabel!,
-                                        "toggle": self.toggleButton!]
+            let views: [String: Any] = ["title": self.titleLabel,
+                                        "toggle": self.toggleButton]
             
             let metrics = ["SPACING": GENERAL_SPACING,
                            "SMALL_SPACING": SMALL_SPACING,

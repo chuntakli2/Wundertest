@@ -17,10 +17,10 @@ class TaskCell: UITableViewCell {
     weak var delegate: TaskCellDelegate?
     var indexPath = IndexPath()
     
-    private var checkBoxButton: UIButton?
-    var checkBoxImageView: UIImageView?
-    var titleLabel: UILabel?
-    var dueDateLabel: UILabel?
+    private var checkBoxButton = UIButton(type: .system)
+    var checkBoxImageView = UIImageView()
+    var titleLabel = UILabel()
+    var dueDateLabel = UILabel()
     
     private var hasLoadedConstraints = false
     
@@ -44,7 +44,7 @@ class TaskCell: UITableViewCell {
     
     // MARK: - Events
     
-    func checkBoxButtonAction() {
+    @objc func checkBoxButtonAction() {
         self.delegate?.completed(indexPath: self.indexPath)
     }
     
@@ -62,54 +62,52 @@ class TaskCell: UITableViewCell {
     // MARK: - Subviews
 
     private func setupCheckBoxButton() {
-        self.checkBoxButton = UIButton(type: .system)
-        self.checkBoxButton?.addTarget(self, action: .checkBoxButtonAction, for: .touchUpInside)
+        self.checkBoxButton.addTarget(self, action: .checkBoxButtonAction, for: .touchUpInside)
     }
 
     private func setupCheckBoxImageView() {
-        self.checkBoxImageView = UIImageView(image: UIImage(named: "tick_white"))
-        self.checkBoxImageView?.tintColor = TINT_COLOUR
-        self.checkBoxImageView?.layer.borderColor = TINT_COLOUR.cgColor
-        self.checkBoxImageView?.layer.borderWidth = 1.0
-        self.checkBoxImageView?.layer.cornerRadius = 0.0
+        self.checkBoxImageView.image = UIImage(named: "tick_white")
+        self.checkBoxImageView.tintColor = TINT_COLOUR
+        self.checkBoxImageView.layer.borderColor = TINT_COLOUR.cgColor
+        self.checkBoxImageView.layer.borderWidth = 1.0
+        self.checkBoxImageView.layer.cornerRadius = 0.0
     }
     
     private func setupTitleLabel() {
         self.titleLabel = UILabel()
-        self.titleLabel?.numberOfLines = 1
-        self.titleLabel?.textAlignment = .left
+        self.titleLabel.numberOfLines = 1
+        self.titleLabel.textAlignment = .left
     }
     
     private func setupDueDateLabel() {
-        self.dueDateLabel = UILabel()
-        self.dueDateLabel?.numberOfLines = 1
-        self.dueDateLabel?.textAlignment = .left
+        self.dueDateLabel.numberOfLines = 1
+        self.dueDateLabel.textAlignment = .left
     }
     
     private func setupSubviews() {
         self.setupCheckBoxButton()
-        self.checkBoxButton?.translatesAutoresizingMaskIntoConstraints = false
-        self.contentView.addSubview(self.checkBoxButton!)
+        self.checkBoxButton.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(self.checkBoxButton)
         
         self.setupCheckBoxImageView()
-        self.checkBoxImageView?.translatesAutoresizingMaskIntoConstraints = false
-        self.checkBoxButton?.addSubview(self.checkBoxImageView!)
+        self.checkBoxImageView.translatesAutoresizingMaskIntoConstraints = false
+        self.checkBoxButton.addSubview(self.checkBoxImageView)
         
         self.setupTitleLabel()
-        self.titleLabel?.translatesAutoresizingMaskIntoConstraints = false
-        self.contentView.addSubview(self.titleLabel!)
+        self.titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(self.titleLabel)
         
         self.setupDueDateLabel()
-        self.dueDateLabel?.translatesAutoresizingMaskIntoConstraints = false
-        self.contentView.addSubview(self.dueDateLabel!)
+        self.dueDateLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(self.dueDateLabel)
     }
     
     override func updateConstraints() {
         if (!self.hasLoadedConstraints) {
-            let views: [String: Any] = ["button": self.checkBoxButton!,
-                                        "image": self.checkBoxImageView!,
-                                        "title": self.titleLabel!,
-                                        "date": self.dueDateLabel!]
+            let views: [String: Any] = ["button": self.checkBoxButton,
+                                        "image": self.checkBoxImageView,
+                                        "title": self.titleLabel,
+                                        "date": self.dueDateLabel]
             
             let metrics = ["SPACING": GENERAL_SPACING,
                            "SMALL_SPACING": SMALL_SPACING,
@@ -126,15 +124,15 @@ class TaskCell: UITableViewCell {
 
             self.contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(SMALL_SPACING)-[title][date]-(SMALL_SPACING)-|", options: .directionMask, metrics: metrics, views: views))
 
-            self.contentView.addConstraint(NSLayoutConstraint(item: self.checkBoxButton!, attribute: .centerY, relatedBy: .equal, toItem: self.contentView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+            self.contentView.addConstraint(NSLayoutConstraint(item: self.checkBoxButton, attribute: .centerY, relatedBy: .equal, toItem: self.contentView, attribute: .centerY, multiplier: 1.0, constant: 0.0))
             
-            self.checkBoxButton!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "[image(SMALL_WIDTH)]", options: .directionMask, metrics: metrics, views: views))
+            self.checkBoxButton.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "[image(SMALL_WIDTH)]", options: .directionMask, metrics: metrics, views: views))
             
-            self.checkBoxButton!.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[image(SMALL_HEIGHT)]", options: .directionMask, metrics: metrics, views: views))
+            self.checkBoxButton.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[image(SMALL_HEIGHT)]", options: .directionMask, metrics: metrics, views: views))
             
-            self.checkBoxButton!.addConstraint(NSLayoutConstraint(item: self.checkBoxImageView!, attribute: .centerX, relatedBy: .equal, toItem: self.checkBoxButton!, attribute: .centerX, multiplier: 1.0, constant: 0.0))
+            self.checkBoxButton.addConstraint(NSLayoutConstraint(item: self.checkBoxImageView, attribute: .centerX, relatedBy: .equal, toItem: self.checkBoxButton, attribute: .centerX, multiplier: 1.0, constant: 0.0))
             
-            self.checkBoxButton!.addConstraint(NSLayoutConstraint(item: self.checkBoxImageView!, attribute: .centerY, relatedBy: .equal, toItem: self.checkBoxButton!, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+            self.checkBoxButton.addConstraint(NSLayoutConstraint(item: self.checkBoxImageView, attribute: .centerY, relatedBy: .equal, toItem: self.checkBoxButton, attribute: .centerY, multiplier: 1.0, constant: 0.0))
             
             self.hasLoadedConstraints = true
         }

@@ -30,7 +30,7 @@ class TaskManager: NSObject {
     // MARK: - Public Methods
     
     func getTasks(from realm: Realm) -> Results<Task> {
-        let tasks = realm.objects(Task.self).sorted(byProperty: "order", ascending: true)
+        let tasks = realm.objects(Task.self).sorted(byKeyPath: "order", ascending: true)
         return tasks
     }
     
@@ -45,7 +45,7 @@ class TaskManager: NSObject {
         case .alphabeticalOrder:
             key = "title"
         }
-        return self.getTasks(from: realm).filter(predicate).sorted(byProperty: key, ascending: (type != .createdDate))
+        return self.getTasks(from: realm).filter(predicate).sorted(byKeyPath: key, ascending: (type != .createdDate))
     }
     
     func getCompletedTasks(from realm: Realm) -> Results<Task> {

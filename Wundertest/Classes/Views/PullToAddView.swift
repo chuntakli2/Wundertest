@@ -10,7 +10,7 @@ import UIKit
 
 class PullToAddView: UIView {
     
-    var addView: UIImageView?
+    var addView = UIImageView()
     
     private var hasLoadedConstraints = false
     
@@ -54,14 +54,14 @@ class PullToAddView: UIView {
     // MARK: - Subviews
     
     private func setupAddView() {
-        self.addView = UIImageView(image: UIImage(named: "add_white"))
-        self.addView?.tintColor = .black
+        self.addView.image = UIImage(named: "add_white")
+        self.addView.tintColor = .black
     }
     
     private func setupSubviews() {
         self.setupAddView()
-        self.addView?.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(self.addView!)
+        self.addView.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(self.addView)
     }
     
     override func layoutSubviews() {
@@ -78,15 +78,15 @@ class PullToAddView: UIView {
     
     override func updateConstraints() {
         if (!self.hasLoadedConstraints) {
-            let views = ["add": self.addView!]
+            let views = ["add": self.addView]
             
             self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "[add]", options: .directionMask, metrics: nil, views: views))
             
             self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[add]", options: .directionMask, metrics: nil, views: views))
             
-            self.addConstraint(NSLayoutConstraint(item: self.addView!, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1.0, constant: 0.0))
+            self.addConstraint(NSLayoutConstraint(item: self.addView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1.0, constant: 0.0))
             
-            self.addConstraint(NSLayoutConstraint(item: self.addView!, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+            self.addConstraint(NSLayoutConstraint(item: self.addView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0.0))
             
             self.hasLoadedConstraints = true
         }

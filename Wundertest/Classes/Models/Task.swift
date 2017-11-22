@@ -10,15 +10,15 @@ import GameplayKit
 import RealmSwift
 
 class Task: Object {
-    dynamic var id: Int = GKRandomSource.sharedRandom().nextInt()
-    dynamic var title: String = ""
-    dynamic var dueDate: Date?
-    dynamic var reminder: Date?
-    dynamic var order: Int = 0
-    dynamic var orderTimestamp: Int = Date.getCurrentTimestampInMilliseconds()
-    dynamic var isCompleted: Bool = false
-    dynamic var creationDate: Date = Date()
-    dynamic var lastUpdatedDate: Date = Date()
+    @objc dynamic var id: Int = GKRandomSource.sharedRandom().nextInt()
+    @objc dynamic var title: String = ""
+    @objc dynamic var dueDate: Date?
+    @objc dynamic var reminder: Date?
+    @objc dynamic var order: Int = 0
+    @objc dynamic var orderTimestamp: Int = Date.getCurrentTimestampInMilliseconds()
+    @objc dynamic var isCompleted: Bool = false
+    @objc dynamic var creationDate: Date = Date()
+    @objc dynamic var lastUpdatedDate: Date = Date()
     
     let userId = RealmOptional<Int>()
     

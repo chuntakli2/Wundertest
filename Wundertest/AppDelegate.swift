@@ -8,6 +8,7 @@
 
 import UIKit
 import UserNotifications
+import Async
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -95,13 +96,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // MARK: - Implementation of UNUserNotificationCenterDelegate Protocols
     
-    @available(iOS 10.0, *)
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         print("User Info = ",notification.request.content.userInfo)
         completionHandler([.alert, .badge, .sound])
     }
     
-    @available(iOS 10.0, *)
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         print("User Info = ",response.notification.request.content.userInfo)
         completionHandler()
@@ -110,17 +109,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Private Methods
     
     private func registerForRemoteNotification() {
-        if #available(iOS 10.0, *) {
-            let center  = UNUserNotificationCenter.current()
-            center.delegate = self
-            center.requestAuthorization(options: [.sound, .alert, .badge]) { (granted, error) in
-                guard (error == nil) else { return }
+        let center  = UNUserNotificationCenter.current()
+        center.delegate = self
+        center.requestAuthorization(options: [.sound, .alert, .badge]) { (granted, error) in
+            guard (error == nil) else { return }
+            Async.main({
                 UIApplication.shared.registerForRemoteNotifications()
-            }
-        }
-        else {
-            UIApplication.shared.registerUserNotificationSettings(UIUserNotificationSettings(types: [.sound, .alert, .badge], categories: nil))
-            UIApplication.shared.registerForRemoteNotifications()
+            })
         }
     }
 }

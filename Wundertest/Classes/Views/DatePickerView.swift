@@ -18,23 +18,23 @@ class DatePickerView: UIView {
     
     weak var delegate: DatePickerViewDelegate?
 
-    private var toolBar: UIToolbar?
-    private var titleLabel: UILabel?
-    private var datePicker: UIDatePicker?
+    private var toolBar = UIToolbar()
+    private var titleLabel = UILabel()
+    private var datePicker = UIDatePicker()
     
     var title: String = "" {
         didSet {
-            self.titleLabel?.attributedText = NSAttributedString(string: self.title, attributes: FONT_ATTR_MEDIUM_BLACK)
+            self.titleLabel.attributedText = NSAttributedString(string: self.title, attributes: FONT_ATTR_MEDIUM_BLACK)
         }
     }
     var date: Date? {
         didSet {
-            self.datePicker?.date = date ?? Date()
+            self.datePicker.date = date ?? Date()
         }
     }
     var mode: UIDatePickerMode = .date {
         didSet {
-            self.datePicker?.datePickerMode = self.mode
+            self.datePicker.datePickerMode = self.mode
         }
     }
     
@@ -64,16 +64,16 @@ class DatePickerView: UIView {
     
     // MARK: - Events
     
-    func dateChanged() {
-        self.delegate?.changed(date: (self.datePicker?.date)!)
+    @objc func dateChanged() {
+        self.delegate?.changed(date: self.datePicker.date)
     }
     
-    func doneAction() {
-        self.delegate?.done(date: (self.datePicker?.date)!)
+    @objc func doneAction() {
+        self.delegate?.done(date: self.datePicker.date)
         self.dismiss()
     }
     
-    func cancelAction() {
+    @objc func cancelAction() {
         self.delegate?.cancel(date: self.date)
         self.dismiss()
     }
@@ -103,45 +103,42 @@ class DatePickerView: UIView {
     // MARK: - Subviews
     
     private func setupToolBar() {
-        self.toolBar = UIToolbar()
-        self.toolBar?.barStyle = .default
+        self.toolBar.barStyle = .default
         
         let doneItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: .doneAction)
         let cancelItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: .cancelAction)
         let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        self.toolBar?.setItems([cancelItem, space, doneItem], animated: false)
+        self.toolBar.setItems([cancelItem, space, doneItem], animated: false)
     }
     
     private func setupTitleLabel() {
-        self.titleLabel = UILabel()
-        self.titleLabel?.numberOfLines = 1
+        self.titleLabel.numberOfLines = 1
     }
     
     private func setupDatePicker() {
-        self.datePicker = UIDatePicker()
-        self.datePicker?.minimumDate = Date()
-        self.datePicker?.addTarget(self, action: .dateChanged, for: .valueChanged)
+        self.datePicker.minimumDate = Date()
+        self.datePicker.addTarget(self, action: .dateChanged, for: .valueChanged)
     }
 
     private func setupSubviews() {
         self.setupToolBar()
-        self.toolBar?.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(self.toolBar!)
+        self.toolBar.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(self.toolBar)
         
         self.setupTitleLabel()
-        self.titleLabel?.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(self.titleLabel!)
+        self.titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(self.titleLabel)
         
         self.setupDatePicker()
-        self.datePicker?.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(self.datePicker!)
+        self.datePicker.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(self.datePicker)
     }
     
     override func updateConstraints() {
         if (!self.hasLoadedConstraints) {
-            let views: [String: Any] = ["tool": self.toolBar!,
-                                        "title": self.titleLabel!,
-                                        "date": self.datePicker!]
+            let views: [String: Any] = ["tool": self.toolBar,
+                                        "title": self.titleLabel,
+                                        "date": self.datePicker]
             
             let metrics = ["HEIGHT": GENERAL_ITEM_HEIGHT]
             
@@ -155,9 +152,9 @@ class DatePickerView: UIView {
             
             self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[title]", options: .directionMask, metrics: nil, views: views))
             
-            self.addConstraint(NSLayoutConstraint(item: self.titleLabel!, attribute: .centerX, relatedBy: .equal, toItem: self.toolBar!, attribute: .centerX, multiplier: 1.0, constant: 0.0))
+            self.addConstraint(NSLayoutConstraint(item: self.titleLabel, attribute: .centerX, relatedBy: .equal, toItem: self.toolBar, attribute: .centerX, multiplier: 1.0, constant: 0.0))
 
-            self.addConstraint(NSLayoutConstraint(item: self.titleLabel!, attribute: .centerY, relatedBy: .equal, toItem: self.toolBar!, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+            self.addConstraint(NSLayoutConstraint(item: self.titleLabel, attribute: .centerY, relatedBy: .equal, toItem: self.toolBar, attribute: .centerY, multiplier: 1.0, constant: 0.0))
             
             self.hasLoadedConstraints = true
         }

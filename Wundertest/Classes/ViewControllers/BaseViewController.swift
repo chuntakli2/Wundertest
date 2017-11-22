@@ -10,7 +10,7 @@ import UIKit
 
 class BaseViewController: UIViewController {
     
-    fileprivate var loadingView: LoadingView?
+    fileprivate var loadingView = LoadingView()
     
     var statusBarStyle: UIStatusBarStyle = .lightContent {
         didSet {
@@ -58,26 +58,25 @@ class BaseViewController: UIViewController {
     }
     
     func showLoadingView() {
-        self.loadingView?.startAnimation()
-        self.view.bringSubview(toFront: self.loadingView!)
+        self.loadingView.startAnimation()
+        self.view.bringSubview(toFront: self.loadingView)
     }
     
     func hideLoadingView() {
-        self.loadingView?.stopAnimation()
-        self.view.sendSubview(toBack: self.loadingView!)
+        self.loadingView.stopAnimation()
+        self.view.sendSubview(toBack: self.loadingView)
     }
     
     // MARK: - Subviews
     
     fileprivate func setupLoadingView() {
-        self.loadingView = LoadingView()
-        self.loadingView?.alpha = 0.0
+        self.loadingView.alpha = 0.0
     }
     
     func setupSubviews() {
         self.setupLoadingView()
-        self.loadingView!.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.loadingView!)
+        self.loadingView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.loadingView)
     }
     
     override var prefersStatusBarHidden : Bool {
@@ -90,15 +89,15 @@ class BaseViewController: UIViewController {
     
     override func updateViewConstraints() {
         if (!self.hasLoadedConstraints) {
-            let views = ["loading": self.loadingView!]
+            let views = ["loading": self.loadingView]
             
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "[loading]", options: .directionMask, metrics: nil, views: views))
             
             self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[loading]", options: .directionMask, metrics: nil, views: views))
             
-            self.view.addConstraint(NSLayoutConstraint(item: self.loadingView!, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1.0, constant: 0.0))
+            self.view.addConstraint(NSLayoutConstraint(item: self.loadingView, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1.0, constant: 0.0))
             
-            self.view.addConstraint(NSLayoutConstraint(item: self.loadingView!, attribute: .centerY, relatedBy: .equal, toItem: self.view, attribute: .centerY, multiplier: 1.0, constant: 0.0))
+            self.view.addConstraint(NSLayoutConstraint(item: self.loadingView, attribute: .centerY, relatedBy: .equal, toItem: self.view, attribute: .centerY, multiplier: 1.0, constant: 0.0))
             
             self.hasLoadedConstraints = true
         }

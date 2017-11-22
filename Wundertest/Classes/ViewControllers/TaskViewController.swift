@@ -13,12 +13,12 @@ import RealmSwift
 
 class TaskViewController: BaseViewController, UITableViewDataSource, UITableViewDelegate, TaskSectionHeaderViewDelegate, TaskCellDelegate, ComposeTaskViewControllerDelegate, MFMailComposeViewControllerDelegate {
 
-    private var tableView: UITableView?
-    private var noTaskLabel: UILabel?
-    private var toolBar: UIToolbar?
-    private var exportButton: UIBarButtonItem?
-    private var sortButton: UIBarButtonItem?
-    private var addButton: UIBarButtonItem?
+    private var tableView = UITableView(frame: .zero, style: .plain)
+    private var noTaskLabel = UILabel()
+    private var toolBar = UIToolbar()
+    private var exportButton = UIBarButtonItem(barButtonSystemItem: .action, target: nil, action: nil)
+    private var sortButton = UIBarButtonItem(image: UIImage(named: "sort"), style: .plain, target: nil, action: nil)
+    private var addButton = UIBarButtonItem(barButtonSystemItem: .add, target: nil, action: nil)
     private var pullToAddView: PullToAddView?
     private var pullToAddControl: PullToRefresh?
 
@@ -53,16 +53,16 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     }
     
     deinit {
-        self.tableView?.removePullToRefresh((self.tableView?.topPullToRefresh)!)
+        self.tableView.removePullToRefresh(at: .top)
     }
     
     // MARK: - Implementation of UITableViewDataSource Protocols
     
     func numberOfSections(in tableView: UITableView) -> Int {
         self.navigationItem.rightBarButtonItem?.isEnabled = (self.incompletedTasks.count > 0)
-        self.noTaskLabel?.isHidden = (self.tasks.count > 0)
-        self.exportButton?.isEnabled = (self.tasks.count > 0)
-        self.sortButton?.isEnabled = (self.tasks.count > 0)
+        self.noTaskLabel.isHidden = (self.tasks.count > 0)
+        self.exportButton.isEnabled = (self.tasks.count > 0)
+        self.sortButton.isEnabled = (self.tasks.count > 0)
         return (self.tasks.count == 0 ? 0 : ((self.completedTasks.count > 0) ? 2 : 1))
     }
     
@@ -79,7 +79,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "TaskSectionHeaderView") as! TaskSectionHeaderView
         header.delegate = self
         let headerTitle = ((self.isExpanded) ? NSLocalizedString("hideCompleted.title", comment: "") : NSLocalizedString("showCompleted.title", comment: ""))
-        header.titleLabel?.attributedText = NSAttributedString(string: headerTitle, attributes: FONT_ATTR_MEDIUM_BLACK)
+        header.titleLabel.attributedText = NSAttributedString(string: headerTitle, attributes: FONT_ATTR_MEDIUM_BLACK)
         return header
     }
     
@@ -90,13 +90,13 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         cell.showsReorderControl = true
         let tasks = ((indexPath.section == 0) ? self.incompletedTasks : self.completedTasks)
         let task = tasks[indexPath.row]
-        cell.titleLabel?.attributedText = nil
-        cell.dueDateLabel?.attributedText = nil
-        var attributes: [String: Any] = FONT_ATTR_LARGE_BLACK
+        cell.titleLabel.attributedText = nil
+        cell.dueDateLabel.attributedText = nil
+        var attributes: [NSAttributedStringKey: Any] = FONT_ATTR_LARGE_BLACK
         if (task.isCompleted) {
-            attributes[NSStrikethroughStyleAttributeName] = NSUnderlineStyle.styleSingle.rawValue
+            attributes[NSAttributedStringKey.strikethroughStyle] = NSUnderlineStyle.styleSingle.rawValue
         }
-        cell.titleLabel?.attributedText = NSAttributedString(string: task.title, attributes: attributes)
+        cell.titleLabel.attributedText = NSAttributedString(string: task.title, attributes: attributes)
         if (indexPath.section == 0) {
             if let date = task.dueDate {
                 let calendar = Calendar.current
@@ -109,12 +109,12 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
                 let month = calendar.component(.month, from: date)
                 let day = calendar.component(.day, from: date)
                 
-                let attributes: [String: Any] = ((todayYear >= year && todayMonth >= month && todayDay > day) ? FONT_ATTR_SMALL_RED : FONT_ATTR_SMALL_DEFAULT_TINT)
+                let attributes: [NSAttributedStringKey: Any] = ((todayYear >= year && todayMonth >= month && todayDay > day) ? FONT_ATTR_SMALL_RED : FONT_ATTR_SMALL_DEFAULT_TINT)
                 let date = String(format: "%d-%d-%d", day, month, year)
-                cell.dueDateLabel?.attributedText = NSAttributedString(string: date, attributes: attributes)
+                cell.dueDateLabel.attributedText = NSAttributedString(string: date, attributes: attributes)
             }
         }
-        cell.checkBoxImageView?.image = ((task.isCompleted) ? UIImage(named: "tick_white") : nil)
+        cell.checkBoxImageView.image = ((task.isCompleted) ? UIImage(named: "tick_white") : nil)
         return cell
     }
     
@@ -170,9 +170,9 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     
     func toggleClicked(section: Int) {
         self.isExpanded = !self.isExpanded
-        self.tableView?.beginUpdates()
-        self.tableView?.reloadSections(IndexSet(integer: 1), with: .automatic)
-        self.tableView?.endUpdates()
+        self.tableView.beginUpdates()
+        self.tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
+        self.tableView.endUpdates()
     }
     
     // MARK: - Implementation of TaskCellDelegate Protocols
@@ -186,9 +186,9 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.getIncompletedTasks()
         self.getCompletedTasks()
         
-        self.tableView?.reloadData()
+        self.tableView.reloadData()
         self.updateTasksOrder()
-        self.tableView?.setContentOffset(.zero, animated: true)
+        self.tableView.setContentOffset(.zero, animated: true)
     }
     
     // MARK: - Implementation of ComposeTaskViewControllerDelegate Protocols
@@ -197,13 +197,13 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.navigationItem.rightBarButtonItem?.isEnabled = true
         self.getIncompletedTasks()
         self.getCompletedTasks()
-        self.tableView?.reloadData()
+        self.tableView.reloadData()
         self.updateTasksOrder()
     }
     
     func saved() {
         self.navigationItem.rightBarButtonItem?.isEnabled = true
-        self.tableView?.reloadData()
+        self.tableView.reloadData()
     }
     
     func cancel() {
@@ -236,15 +236,15 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     
     // MARK: - Events
     
-    func rightBarButtonAction() {
-        self.tableView?.setEditing(!(self.tableView!.isEditing), animated: true)
-        let itemType = ((self.tableView!.isEditing) ? UIBarButtonSystemItem.done : UIBarButtonSystemItem.edit)
+    @objc func rightBarButtonAction() {
+        self.tableView.setEditing(!(self.tableView.isEditing), animated: true)
+        let itemType = ((self.tableView.isEditing) ? UIBarButtonSystemItem.done : UIBarButtonSystemItem.edit)
         let rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: itemType, target: self, action: .rightBarButtonAction)
         self.navigationItem.setRightBarButton(rightBarButtonItem, animated: true)
-        self.tableView?.alwaysBounceVertical = !(self.tableView?.isEditing)!
+        self.tableView.alwaysBounceVertical = !(self.tableView.isEditing)
     }
     
-    func exportButtonAction() {
+    @objc func exportButtonAction() {
         let exportAlertController = UIAlertController(title: NSLocalizedString("export.title", comment: ""), message: nil, preferredStyle: .actionSheet)
         let exportByCDAction = UIAlertAction(title: NSLocalizedString("exportByCD.title", comment: ""), style: .default, handler: { [unowned self] (action) in
             let csvFileURL = TaskManager.sharedInstance.exportTasksToCSV(sortBy: .createdDate, realm: RealmManager.sharedInstance.realm)
@@ -260,22 +260,22 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         exportAlertController.addAction(cancelAction)
         if (IS_IPAD) {
             exportAlertController.popoverPresentationController?.sourceView = self.navigationController!.view
-            exportAlertController.popoverPresentationController?.barButtonItem = self.sortButton!
+            exportAlertController.popoverPresentationController?.barButtonItem = self.sortButton
             exportAlertController.popoverPresentationController?.canOverlapSourceViewRect = true
         }
         self.navigationController?.present(exportAlertController, animated: true, completion: nil)
     }
     
-    func sortButtonAction() {
+    @objc func sortButtonAction() {
         let sortAlertController = UIAlertController(title: NSLocalizedString("sort.title", comment: ""), message: nil, preferredStyle: .actionSheet)
         let sortByCDAction = UIAlertAction(title: NSLocalizedString("sortByCD.title", comment: ""), style: .default, handler: { [unowned self] (action) in
             self.getIncompletedTasks(sortBy: .createdDate)
-            self.tableView?.reloadData()
+            self.tableView.reloadData()
             self.updateTasksOrder()
         })
         let sortByAOAction = UIAlertAction(title: NSLocalizedString("sortByAO.title", comment: ""), style: .default, handler: { [unowned self] (action) in
             self.getIncompletedTasks(sortBy: .alphabeticalOrder)
-            self.tableView?.reloadData()
+            self.tableView.reloadData()
             self.updateTasksOrder()
         })
         let cancelAction = UIAlertAction(title: NSLocalizedString("cancel.title", comment: ""), style: .cancel, handler: nil)
@@ -284,13 +284,13 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         sortAlertController.addAction(cancelAction)
         if (IS_IPAD) {
             sortAlertController.popoverPresentationController?.sourceView = self.navigationController!.view
-            sortAlertController.popoverPresentationController?.barButtonItem = self.sortButton!
+            sortAlertController.popoverPresentationController?.barButtonItem = self.sortButton
             sortAlertController.popoverPresentationController?.canOverlapSourceViewRect = true
         }
         self.navigationController?.present(sortAlertController, animated: true, completion: nil)
     }
     
-    func addButtonAction() {
+    @objc func addButtonAction() {
         self.composeTask()
     }
     
@@ -301,8 +301,8 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     }
     
     func composeTask() {
-        guard !(self.tableView?.isEditing)! else {
-            self.tableView?.endRefreshing(at: .top)
+        guard !(self.tableView.isEditing) else {
+            self.tableView.endRefreshing(at: .top)
             return
         }
         self.navigationItem.rightBarButtonItem?.isEnabled = false
@@ -314,7 +314,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.view.addSubview(composeTaskViewController.view)
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "|[compose]|", options: .directionMask, metrics: nil, views: ["compose": composeTaskViewController.view!]))
         self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[compose]|", options: .directionMask, metrics: nil, views: ["compose": composeTaskViewController.view!]))
-        self.tableView?.endRefreshing(at: .top)
+        self.tableView.endRefreshing(at: .top)
     }
 
     // MARK: - Private Methods
@@ -344,11 +344,11 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.getCompletedTasks()
         
         if (tasks.count == 0) {
-            self.tableView?.reloadData()
+            self.tableView.reloadData()
         } else {
-            self.tableView?.beginUpdates()
-            self.tableView?.deleteRows(at: [indexPath], with: .automatic)
-            self.tableView?.endUpdates()
+            self.tableView.beginUpdates()
+            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+            self.tableView.endUpdates()
         }
         self.updateTasksOrder()
     }
@@ -372,14 +372,13 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
     // MARK: - Subviews
     
     private func setupTableView() {
-        self.tableView = UITableView(frame: CGRect.zero, style: .plain)
-        self.tableView?.backgroundColor = .white
-        self.tableView?.dataSource = self
-        self.tableView?.delegate = self
-        self.tableView?.tableHeaderView = UIView()
-        self.tableView?.tableFooterView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 0.0, height: GENERAL_ITEM_HEIGHT))
-        self.tableView?.rowHeight = GENERAL_CELL_HEIGHT
-        self.tableView?.separatorStyle = .singleLine
+        self.tableView.backgroundColor = .white
+        self.tableView.dataSource = self
+        self.tableView.delegate = self
+        self.tableView.tableHeaderView = UIView()
+        self.tableView.tableFooterView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 0.0, height: GENERAL_ITEM_HEIGHT))
+        self.tableView.rowHeight = GENERAL_CELL_HEIGHT
+        self.tableView.separatorStyle = .singleLine
         
         self.pullToAddView = PullToAddView(frame: CGRect(x: 0.0, y: 0.0, width: 0.0, height: PULL_TO_ADD_VIEW_HEIGHT))
         let pullToAddAnimator = PullToAddAnimator(pullToAddView: self.pullToAddView!)
@@ -388,53 +387,54 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.pullToAddControl?.animationDuration = ANIMATION_DURATION
         self.pullToAddControl?.springDamping = 1.0
         self.pullToAddControl?.initialSpringVelocity = 0.0
-        self.tableView?.addPullToRefresh(self.pullToAddControl!, action: { [unowned self] in
+        self.tableView.addPullToRefresh(self.pullToAddControl!, action: { [unowned self] in
             self.composeTask()
         })
     }
     
     private func setupNoTaskLabel() {
-        self.noTaskLabel = UILabel()
-        self.noTaskLabel?.backgroundColor = .clear
-        self.noTaskLabel?.numberOfLines = 1
-        self.noTaskLabel?.textAlignment = .center
-        self.noTaskLabel?.attributedText = NSAttributedString(string: NSLocalizedString("pullToAdd.message", comment: ""), attributes: FONT_ATTR_LARGE_BLACK)
-        self.noTaskLabel?.isUserInteractionEnabled = false
+        self.noTaskLabel.backgroundColor = .clear
+        self.noTaskLabel.numberOfLines = 1
+        self.noTaskLabel.textAlignment = .center
+        self.noTaskLabel.attributedText = NSAttributedString(string: NSLocalizedString("pullToAdd.message", comment: ""), attributes: FONT_ATTR_LARGE_BLACK)
+        self.noTaskLabel.isUserInteractionEnabled = false
     }
     
     private func setupToolBar() {
-        self.toolBar = UIToolbar()
-        self.toolBar?.barStyle = .default
-        self.toolBar?.tintColor = TINT_COLOUR
+        self.toolBar.barStyle = .default
+        self.toolBar.tintColor = TINT_COLOUR
         
-        self.exportButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: .exportButtonAction)
-        self.sortButton = UIBarButtonItem(image: UIImage(named: "sort"), style: .plain, target: self, action: .sortButtonAction)
-        self.addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: .addButtonAction)
+        self.exportButton.target = self
+        self.exportButton.action = .exportButtonAction
+        self.sortButton.target = self
+        self.sortButton.action = .sortButtonAction
+        self.addButton.target = self
+        self.addButton.action = .addButtonAction
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        self.toolBar?.items = [self.exportButton!, flexibleSpace, self.sortButton!, flexibleSpace, self.addButton!]
+        self.toolBar.items = [self.exportButton, flexibleSpace, self.sortButton, flexibleSpace, self.addButton]
     }
     
     override func setupSubviews() {
         super.setupSubviews()
         
         self.setupTableView()
-        self.tableView?.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.tableView!)
+        self.tableView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.tableView)
         
         self.setupNoTaskLabel()
-        self.noTaskLabel?.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.noTaskLabel!)
+        self.noTaskLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.noTaskLabel)
 
         self.setupToolBar()
-        self.toolBar?.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(self.toolBar!)
+        self.toolBar.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(self.toolBar)
     }
     
     override func updateViewConstraints() {
         if (!self.hasLoadedConstraints) {
-            let views: [String: Any] = ["table": self.tableView!,
-                                        "noTask": self.noTaskLabel!,
-                                        "bar": self.toolBar!]
+            let views: [String: Any] = ["table": self.tableView,
+                                        "noTask": self.noTaskLabel,
+                                        "bar": self.toolBar]
             
             let metrics = ["HEIGHT": GENERAL_ITEM_HEIGHT]
 
@@ -473,12 +473,12 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         let editBarButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: .rightBarButtonAction)
         self.navigationItem.rightBarButtonItem = editBarButton
         
-        self.tableView?.register(TaskSectionHeaderView.self, forHeaderFooterViewReuseIdentifier: "TaskSectionHeaderView")
-        self.tableView?.register(TaskCell.self, forCellReuseIdentifier: "TaskCell")
+        self.tableView.register(TaskSectionHeaderView.self, forHeaderFooterViewReuseIdentifier: "TaskSectionHeaderView")
+        self.tableView.register(TaskCell.self, forCellReuseIdentifier: "TaskCell")
         
         self.getIncompletedTasks()
         self.getCompletedTasks()
-        self.tableView?.reloadData()
+        self.tableView.reloadData()
     }
 }
 

@@ -10,12 +10,12 @@ import GameplayKit
 import RealmSwift
 
 class User: Object {
-    dynamic var id: Int = GKRandomSource.sharedRandom().nextInt()
-    dynamic var name: String = ""
-    dynamic var email: String = ""
-    dynamic var password: Data = Data()
-    dynamic var creationDate: Date = Date()
-    dynamic var lastUpdatedDate: Date = Date()
+    @objc dynamic var id: Int = GKRandomSource.sharedRandom().nextInt()
+    @objc dynamic var name: String = ""
+    @objc dynamic var email: String = ""
+    @objc dynamic var password: Data = Data()
+    @objc dynamic var creationDate: Date = Date()
+    @objc dynamic var lastUpdatedDate: Date = Date()
     
     override static func primaryKey() -> String? {
         return "id"

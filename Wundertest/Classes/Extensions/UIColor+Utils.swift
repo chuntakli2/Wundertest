@@ -18,7 +18,7 @@ extension UIColor {
         let success = scanner.scanHexInt32(&hexNumber)
         
         guard (success) else { return .clear }
-        if (hexString.characters.count <= 6) {
+        if (hexString.count <= 6) {
             return colour(fromRGB: hexNumber)
         } else {
             let rgb = (hexNumber & 0xFFFFFF00) >> 8

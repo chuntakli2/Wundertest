@@ -18,8 +18,8 @@ class DateTimeRemoveButtonStackView: UIStackView {
     weak var delegate: DateTimeRemoveButtonStackViewDelegate?
     var dateTimeType: DateTimeType = .date
     
-    var dateTimeButton: UIButton?
-    var removeButton: UIButton?
+    var dateTimeButton = UIButton(type: .system)
+    var removeButton = UIButton(type: .system)
     
     fileprivate var hasLoadedConstraints = false
     
@@ -47,22 +47,22 @@ class DateTimeRemoveButtonStackView: UIStackView {
     
     // MARK: - Events
     
-    func dateTimeButtonAction() {
+    @objc func dateTimeButtonAction() {
         self.delegate?.dateTimeButtonPressed(type: self.dateTimeType)
     }
     
-    func removeButtonAction() {
+    @objc func removeButtonAction() {
         self.delegate?.removeButtonPressed(type: self.dateTimeType)
     }
     
     // MARK: - Public Methods
     
     func showRemoveButton() {
-        self.removeButton?.isHidden = false
+        self.removeButton.isHidden = false
     }
     
     func hideRemoveButton() {
-        self.removeButton?.isHidden = true
+        self.removeButton.isHidden = true
     }
     
     // MARK: - Private Methods
@@ -79,36 +79,34 @@ class DateTimeRemoveButtonStackView: UIStackView {
     // MARK: - Subviews
     
     private func setupDateTimeButton() {
-        self.dateTimeButton = UIButton(type: .system)
-        self.dateTimeButton?.addTarget(self, action: .dateTimeButtonAction, for: .touchUpInside)
-        self.dateTimeButton?.contentHorizontalAlignment = .left
-        self.dateTimeButton?.titleEdgeInsets = UIEdgeInsetsMake(0.0, GENERAL_SPACING, 0.0, GENERAL_SPACING)
-        self.dateTimeButton?.titleLabel?.numberOfLines = 0
-        self.dateTimeButton?.titleLabel?.textAlignment = .right
+        self.dateTimeButton.addTarget(self, action: .dateTimeButtonAction, for: .touchUpInside)
+        self.dateTimeButton.contentHorizontalAlignment = .left
+        self.dateTimeButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, GENERAL_SPACING, 0.0, GENERAL_SPACING)
+        self.dateTimeButton.titleLabel?.numberOfLines = 0
+        self.dateTimeButton.titleLabel?.textAlignment = .right
     }
     
     private func setupRemoveButton() {
-        self.removeButton = UIButton(type: .system)
-        self.removeButton?.setImage(UIImage(named: "close_white"), for: .normal)
-        self.removeButton?.addTarget(self, action: .removeButtonAction, for: .touchUpInside)
-        self.removeButton?.tintColor = .red
-        self.removeButton?.isHidden = true
+        self.removeButton.setImage(UIImage(named: "close_white"), for: .normal)
+        self.removeButton.addTarget(self, action: .removeButtonAction, for: .touchUpInside)
+        self.removeButton.tintColor = .red
+        self.removeButton.isHidden = true
     }
     
     private func setupSubviews() {
         self.setupDateTimeButton()
-        self.dateTimeButton?.translatesAutoresizingMaskIntoConstraints = false
-        self.addArrangedSubview(self.dateTimeButton!)
+        self.dateTimeButton.translatesAutoresizingMaskIntoConstraints = false
+        self.addArrangedSubview(self.dateTimeButton)
         
         self.setupRemoveButton()
-        self.removeButton?.translatesAutoresizingMaskIntoConstraints = false
-        self.addArrangedSubview(self.removeButton!)
+        self.removeButton.translatesAutoresizingMaskIntoConstraints = false
+        self.addArrangedSubview(self.removeButton)
     }
     
     override func updateConstraints() {
         if (!self.hasLoadedConstraints) {
-            let views = ["dateTime": self.dateTimeButton!,
-                         "remove": self.removeButton!]
+            let views = ["dateTime": self.dateTimeButton,
+                         "remove": self.removeButton]
             
             let metrics = ["WIDTH": GENERAL_ITEM_WIDTH,
                            "HEIGHT": GENERAL_ITEM_HEIGHT]

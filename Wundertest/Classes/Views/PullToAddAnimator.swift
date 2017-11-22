@@ -19,12 +19,12 @@ class PullToAddAnimator: RefreshViewAnimator {
     func animate(_ state: State) {
         switch state {
         case .initial:
-            self.pullToAddView.addView?.transform = .identity
-            self.pullToAddView.addView?.alpha = 0.0
+            self.pullToAddView.addView.transform = .identity
+            self.pullToAddView.addView.alpha = 0.0
             
         case .releasing(let progress):
-            self.pullToAddView.addView?.transform = CGAffineTransform(scaleX: progress, y: progress)
-            self.pullToAddView.addView?.alpha = ((progress < 1.0) ? progress : 1.0)
+            self.pullToAddView.addView.transform = CGAffineTransform(scaleX: progress, y: progress)
+            self.pullToAddView.addView.alpha = ((progress < 1.0) ? progress : 1.0)
             
         case .loading:
             break

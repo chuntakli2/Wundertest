@@ -55,6 +55,8 @@ let IPHONE_PLUS_HEIGHT: CGFloat = 736.0
 let IS_IPHONE_PLUS = (UIScreen.main.bounds.width * UIScreen.main.bounds.height == IPHONE_PLUS_WIDTH * IPHONE_PLUS_HEIGHT)
 let IS_IPAD = (UIDevice.current.userInterfaceIdiom == .pad)
 
+let REALM_SCHEMA_VERSION: UInt64 = 1
+
 // MARK: - Font start
 
 let BASE_FONT_NAME = "Avenir-Medium"
@@ -89,32 +91,32 @@ let FONT_COLOUR_DARK_GRAY = UIColor.darkGray
 let FONT_COLOUR_RED = UIColor.red
 let FONT_COLOUR_DEFAULT_TINT = DEFAULT_TINT_COLOUR
 
-let FONT_ATTR_SMALL_WHITE = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
-let FONT_ATTR_SMALL_WHITE_BOLD = [NSFontAttributeName: FONT_SMALL_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
-let FONT_ATTR_SMALL_BLACK = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
-let FONT_ATTR_SMALL_BLACK_BOLD = [NSFontAttributeName: FONT_SMALL_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
-let FONT_ATTR_SMALL_RED = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
-let FONT_ATTR_SMALL_RED_BOLD = [NSFontAttributeName: FONT_SMALL_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
-let FONT_ATTR_SMALL_DEFAULT_TINT = [NSFontAttributeName: FONT_SMALL!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
-let FONT_ATTR_SMALL_DEFAULT_TINT_BOLD = [NSFontAttributeName: FONT_SMALL_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
+let FONT_ATTR_SMALL_WHITE = [NSAttributedStringKey.font: FONT_SMALL!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_WHITE]
+let FONT_ATTR_SMALL_WHITE_BOLD = [NSAttributedStringKey.font: FONT_SMALL_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_WHITE]
+let FONT_ATTR_SMALL_BLACK = [NSAttributedStringKey.font: FONT_SMALL!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_BLACK]
+let FONT_ATTR_SMALL_BLACK_BOLD = [NSAttributedStringKey.font: FONT_SMALL_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_BLACK]
+let FONT_ATTR_SMALL_RED = [NSAttributedStringKey.font: FONT_SMALL!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_RED]
+let FONT_ATTR_SMALL_RED_BOLD = [NSAttributedStringKey.font: FONT_SMALL_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_RED]
+let FONT_ATTR_SMALL_DEFAULT_TINT = [NSAttributedStringKey.font: FONT_SMALL!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_DEFAULT_TINT]
+let FONT_ATTR_SMALL_DEFAULT_TINT_BOLD = [NSAttributedStringKey.font: FONT_SMALL_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_DEFAULT_TINT]
 
-let FONT_ATTR_MEDIUM_WHITE = [NSFontAttributeName: FONT_MEDIUM!, NSForegroundColorAttributeName:FONT_COLOUR_WHITE]
-let FONT_ATTR_MEDIUM_WHITE_BOLD = [NSFontAttributeName: FONT_MEDIUM_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
-let FONT_ATTR_MEDIUM_BLACK = [NSFontAttributeName: FONT_MEDIUM!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
-let FONT_ATTR_MEDIUM_BLACK_BOLD = [NSFontAttributeName: FONT_MEDIUM_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
-let FONT_ATTR_MEDIUM_RED = [NSFontAttributeName: FONT_MEDIUM!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
-let FONT_ATTR_MEDIUM_RED_BOLD = [NSFontAttributeName: FONT_MEDIUM_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
-let FONT_ATTR_MEDIUM_DEFAULT_TINT = [NSFontAttributeName: FONT_MEDIUM!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
-let FONT_ATTR_MEDIUM_DEFAULT_TINT_BOLD = [NSFontAttributeName: FONT_MEDIUM_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
+let FONT_ATTR_MEDIUM_WHITE = [NSAttributedStringKey.font: FONT_MEDIUM!, NSAttributedStringKey.foregroundColor:FONT_COLOUR_WHITE]
+let FONT_ATTR_MEDIUM_WHITE_BOLD = [NSAttributedStringKey.font: FONT_MEDIUM_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_WHITE]
+let FONT_ATTR_MEDIUM_BLACK = [NSAttributedStringKey.font: FONT_MEDIUM!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_BLACK]
+let FONT_ATTR_MEDIUM_BLACK_BOLD = [NSAttributedStringKey.font: FONT_MEDIUM_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_BLACK]
+let FONT_ATTR_MEDIUM_RED = [NSAttributedStringKey.font: FONT_MEDIUM!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_RED]
+let FONT_ATTR_MEDIUM_RED_BOLD = [NSAttributedStringKey.font: FONT_MEDIUM_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_RED]
+let FONT_ATTR_MEDIUM_DEFAULT_TINT = [NSAttributedStringKey.font: FONT_MEDIUM!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_DEFAULT_TINT]
+let FONT_ATTR_MEDIUM_DEFAULT_TINT_BOLD = [NSAttributedStringKey.font: FONT_MEDIUM_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_DEFAULT_TINT]
 
-let FONT_ATTR_LARGE_WHITE = [NSFontAttributeName: FONT_LARGE!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
-let FONT_ATTR_LARGE_WHITE_BOLD = [NSFontAttributeName: FONT_LARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_WHITE]
-let FONT_ATTR_LARGE_BLACK = [NSFontAttributeName: FONT_LARGE!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
-let FONT_ATTR_LARGE_BLACK_BOLD = [NSFontAttributeName: FONT_LARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_BLACK]
-let FONT_ATTR_LARGE_RED = [NSFontAttributeName: FONT_LARGE!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
-let FONT_ATTR_LARGE_RED_BOLD = [NSFontAttributeName: FONT_LARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_RED]
-let FONT_ATTR_LARGE_DEFAULT_TINT = [NSFontAttributeName: FONT_LARGE!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
-let FONT_ATTR_LARGE_DEFAULT_TINT_BOLD = [NSFontAttributeName: FONT_LARGE_BOLD!, NSForegroundColorAttributeName: FONT_COLOUR_DEFAULT_TINT]
+let FONT_ATTR_LARGE_WHITE = [NSAttributedStringKey.font: FONT_LARGE!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_WHITE]
+let FONT_ATTR_LARGE_WHITE_BOLD = [NSAttributedStringKey.font: FONT_LARGE_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_WHITE]
+let FONT_ATTR_LARGE_BLACK = [NSAttributedStringKey.font: FONT_LARGE!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_BLACK]
+let FONT_ATTR_LARGE_BLACK_BOLD = [NSAttributedStringKey.font: FONT_LARGE_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_BLACK]
+let FONT_ATTR_LARGE_RED = [NSAttributedStringKey.font: FONT_LARGE!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_RED]
+let FONT_ATTR_LARGE_RED_BOLD = [NSAttributedStringKey.font: FONT_LARGE_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_RED]
+let FONT_ATTR_LARGE_DEFAULT_TINT = [NSAttributedStringKey.font: FONT_LARGE!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_DEFAULT_TINT]
+let FONT_ATTR_LARGE_DEFAULT_TINT_BOLD = [NSAttributedStringKey.font: FONT_LARGE_BOLD!, NSAttributedStringKey.foregroundColor: FONT_COLOUR_DEFAULT_TINT]
 
 // MARK: - General Config
 
