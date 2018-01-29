@@ -64,7 +64,7 @@ class TaskViewController: BaseViewController, UITableViewDataSource, UITableView
         self.navigationItem.rightBarButtonItem?.isEnabled = (self.incompletedTasks.count > 0)
         self.noTaskLabel.isHidden = (self.tasks.count > 0)
         self.exportButton.isEnabled = (self.tasks.count > 0)
-        self.sortButton.isEnabled = (self.tasks.count > 0)
+        self.sortButton.isEnabled = (self.tasks.count > 1)
         return (self.tasks.count == 0 ? 0 : ((self.completedTasks.count > 0) ? 2 : 1))
     }
     
