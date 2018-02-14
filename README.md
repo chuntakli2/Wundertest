@@ -11,7 +11,7 @@ Current version supports all the fundamental required features:
 
 Plus some additional features:
 - Swipe down / Pull to add task
-- Add Due Date & Reminder
+- Add Due Date & Reminder with Local Notification
 - Sort tasks (by create date / alphabetical order)
 - Generate tasks as CSV file with sorting and export by Email
 - Universal binary
